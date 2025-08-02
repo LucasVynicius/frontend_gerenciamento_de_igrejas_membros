@@ -1,0 +1,72 @@
+/* src/components/Sidebar/Sidebar.css */
+
+.sidebar {
+  width: 250px;
+  background-color: #6b3fa0; /* Cor de fundo roxa/lilás */
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Espaço entre o header, nav e footer */
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.sidebar-logo {
+  width: 60%; /* Ajuste o tamanho do logo */
+  height: auto;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-nav li {
+  margin-bottom: 10px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  border-radius: 8px;
+  color: #fff;
+  text-decoration: none;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.nav-item svg {
+  margin-right: 15px;
+  font-size: 1.2rem;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background-color: #5c6bc0; /* Cor mais clara no hover/ativo */
+  text-decoration: none;
+}
+
+.sidebar-footer {
+  text-align: center;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 10px 15px;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.logout-btn:hover {
+  background-color: #5c6bc0;
+}

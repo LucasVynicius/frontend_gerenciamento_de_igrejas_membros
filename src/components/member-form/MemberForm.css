@@ -1,0 +1,57 @@
+/* src/components/member-form/MemberForm.css */
+
+.member-form h5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+}
+
+.member-form .form-label {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+
+.member-form .form-control,
+.member-form .form-select {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.member-form .form-control:focus,
+.member-form .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    outline: none;
+}
+
+.member-form .form-check-input {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.member-form .form-check-label {
+    margin-left: 0.5rem;
+}
+
+/* Media queries para o formulário (aqui que a mágica acontece) */
+@media (max-width: 576px) {
+    .member-form h5 {
+        font-size: 1.1rem;
+    }
+    .modal-footer {
+        flex-direction: column;
+    }
+    .modal-footer button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}
