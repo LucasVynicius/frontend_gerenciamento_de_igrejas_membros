@@ -1,5 +1,4 @@
 import React from 'react';
-import Layout from '../../components/layout/Layout';
 import DashboardCard from '../../components/dashboard/DashboardCard';
 import { FaUsers, FaChurch, FaLaptopCode, FaLock, FaFileAlt } from 'react-icons/fa';
 import './Dashboard.css';
@@ -22,7 +21,6 @@ const Dashboard: React.FC = () => {
                 <DashboardCard icon={<FaLaptopCode />} title="Ministérios" link="/ministerios" />
                 <DashboardCard icon={<FaLock />} title="Permissões" link="/permissoes" />
                 <DashboardCard icon={<FaFileAlt />} title="Relatórios" link="/relatorios" />
-                {/* Adicione mais cards aqui */}
             </div>
         </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as authService from '../services/authService';
+import { register } from '../services/authService';
 import { Modal } from '../components';
 
 interface RegisterRequest {
@@ -33,7 +33,7 @@ const RegisterPage = () => {
         e.preventDefault();
         try {
             const userData: RegisterRequest = { username, email, password, role: role as 'ADMIN' | 'SECRETARY' };
-            await authService.register(userData);
+            await register(userData);
             setModalContent({
                 title: 'Registro bem-sucedido',
                 message: 'Usuário registrado com sucesso. Você será redirecionado para a página de login.',

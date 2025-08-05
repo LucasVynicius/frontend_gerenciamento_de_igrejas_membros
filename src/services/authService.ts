@@ -1,68 +1,64 @@
-import axios, { AxiosError } from "axios";
-import api from "./api"; 
+import { authApi } from './api'; 
+import { AxiosError } from 'axios';
 
-interface AuthRequest{
-    username: string;
-    password: string;
+export interface UserInfo {
+  username: string;
+  email: string;
+  role: 'ADMIN' | 'SECRETARY';
 }
 
-interface RegisterRequest{
-    username: string;
-    email: string;
-    password: string;
-    role: 'ADMIN' | 'SECRETARY';
-}
-
-interface AuthResponse{
-    accessToken: string;
-    refreshToken: string;
-}
-
-interface UserInfo{
-    username: string;
-    email: string;
-    role: 'ADMIN' | 'SECRETARY';
-}
-
-const authApi = axios.create({
-  baseURL: import.meta.env.VITE_AUTH_BASE_URL
-});
-
-export const login = async (
-  credentials: AuthRequest
-): Promise<AuthResponse> => {
+export const getLoggedInUser = async (token: string): Promise<UserInfo> => {
   try {
-    const response = await authApi.post<AuthResponse>("/login", credentials);
+    const response = await authApi.get<UserInfo>('/auth/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return response.data;
-  } catch (error: unknown) {
+
+  } catch (error) {
     const errorMessage =
       (error as AxiosError<{ message?: string }>)?.response?.data?.message ||
-      "Erro ao efetuar login. Verifique suas credenciais.";
+      'Erro ao carregar informações do usuário.';
     throw new Error(errorMessage);
   }
 };
 
-export const register = async (userData: RegisterRequest): Promise<void> => {
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  role: 'ADMIN' | 'SECRETARY';
+}
+
+export const register = async (data: RegisterRequest): Promise<UserInfo> => {
   try {
-    const response = await authApi.post("/register", userData);
+    const response = await authApi.post<UserInfo>('/auth/register', data);
     return response.data;
-  } catch (error: unknown) {
+  } catch (error) {
     const errorMessage =
       (error as AxiosError<{ message?: string }>)?.response?.data?.message ||
-      "Erro ao registrar usuário. Verifique os dados informados.";
+      'Erro ao registrar usuário.';
     throw new Error(errorMessage);
   }
 };
 
-// A função getLoggedInUser foi corrigida para usar a API principal
-export const getLoggedInUser = async (token : string): Promise<UserInfo> => {
+export interface AuthRequest {
+  username: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string | null;
+}
+
+export const login = async (credentials: AuthRequest): Promise<AuthResponse> => {
   try {
-    const response = await authApi.get<UserInfo>("/me", { headers: { Authorization: `Bearer ${token}` } });
+    const response = await authApi.post<AuthResponse>('/auth/login', credentials);
     return response.data;
-  } catch (error: unknown) {
+  } catch (error) {
     const errorMessage =
       (error as AxiosError<{ message?: string }>)?.response?.data?.message ||
-      "Erro ao carregar informações do usuário.";
+      'Erro ao efetuar login. Verifique suas credenciais.';
     throw new Error(errorMessage);
   }
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { FaHome, FaUsers, FaChurch, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import './Sidebar.css';
 
@@ -11,7 +11,7 @@ const Sidebar: React.FC = () => {
       </div>
       <nav className="sidebar-nav">
         <ul>
-          <li><Link to="/dashboard" className="nav-item active"><FaHome /><span>Dashboard</span></Link></li>
+          <li><NavLink to="/" end className="nav-item active"><FaHome /><span>Dashboard</span></NavLink></li>
           <li><Link to="/membros" className="nav-item"><FaUsers /><span>Membros</span></Link></li>
           <li><Link to="/igrejas" className="nav-item"><FaChurch /><span>Igrejas</span></Link></li>
           <li><Link to="/configuracoes" className="nav-item"><FaCog /><span>Configurações</span></Link></li>

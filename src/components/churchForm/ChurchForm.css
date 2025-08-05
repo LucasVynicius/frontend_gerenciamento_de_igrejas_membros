@@ -1,0 +1,43 @@
+.church-form h5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #8A2BE2;
+    padding-bottom: 5px;
+}
+
+.church-form .form-label {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+
+.church-form .form-control,
+.church-form .form-select {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.church-form .form-control:focus,
+.church-form .form-select:focus {
+    border-color: #c499f5;
+    box-shadow: 0 0 0 0.25rem rgba(138, 43, 226, 0.25); 
+    outline: none;
+}
+
+@media (max-width: 576px) {
+    .church-form h5 {
+        font-size: 1.1rem;
+    }
+    .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem; 
+    }
+    .modal-footer button {
+        width: 100%;
+    }
+}

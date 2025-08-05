@@ -1,17 +1,19 @@
-
-.app-container {
+/* Controla o container principal que divide a tela em duas */
+.layout-container {
   display: flex;
-  height: 100vh;
-  background-color: #f0f2f5; 
+  min-height: 100vh;
+  background-color: #f4f7f6; /* Um cinza bem claro para o fundo */
 }
 
+/* Define a área de conteúdo principal, que cresce para ocupar o espaço */
 .main-content {
-  flex-grow: 1;
+  flex-grow: 1; /* Faz esta div ocupar todo o espaço restante */
   display: flex;
   flex-direction: column;
-  overflow-y: auto; 
 }
 
+/* Onde o conteúdo de cada página (Dashboard, Membros, etc.) será renderizado */
 .page-content {
-  padding: 20px;
+  padding: 2rem;
+  overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
 }
