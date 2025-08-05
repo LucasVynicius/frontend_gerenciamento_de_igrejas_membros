@@ -1,9 +1,11 @@
-import type { ChurchRequestDTO } from "../../services/church/ChurchService";
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
+import { IMaskInput } from 'react-imask'; // Usando a biblioteca de máscara correta
+import axios from 'axios';
+import type { ChurchRequestDTO } from '../../services/church/ChurchService';
 import { RegistryType } from '../../enums/RegistryType';
-import { useForm } from "react-hook-form";
-import type { SubmitHandler } from "react-hook-form";
-import axios from "axios";
-import './ChurchForm.css'
+import './ChurchForm.css';
 
 interface ChurchFormProps {
     initialData?: Partial<ChurchRequestDTO>;
@@ -12,119 +14,110 @@ interface ChurchFormProps {
     isSubmitting: boolean;
 }
 
-const ChurchForm: React.FC<ChurchFormProps> = ({
-    initialData,
-    onSubmit,
-    onCancel,
-    isSubmitting,
-}) => {
-    const { register, handleSubmit, formState: { errors }, setValue } = useForm<ChurchRequestDTO>({
+const ChurchForm: React.FC<ChurchFormProps> = ({ initialData, onSubmit, onCancel, isSubmitting }) => {
+    const { control, handleSubmit, formState: { errors }, setValue, register } = useForm<ChurchRequestDTO>({
         defaultValues: initialData || {
             name: "",
             tradeName: "",
-            registryType: "",
+            registryType: RegistryType.CNPJ, 
             registryNumber: "",
             foundationDate: "",
-            pastorLocalId: null,
+            pastorLocalId: undefined, 
             address: {
-                street: "",
-                number: "",
-                complement: "",
-                neighborhood: "",
-                city: "",
-                state: "",
-                country: "",
-                zipCode: ""
+                street: "", number: "", complement: "", neighborhood: "",
+                city: "", state: "", country: "", zipCode: ""
             }
         },
     });
 
-    const handleFormSubmint: SubmitHandler<ChurchRequestDTO> = (data) => {
-        onSubmit(data);
-    }
     const handleCepBlur = async (event: React.FocusEvent<HTMLInputElement>) => {
-        const cep = event.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
-
-        if (cep.length !== 8) {
-            return;
-        }
+        const cep = event.target.value.replace(/\D/g, '');
+        if (cep.length !== 8) return;
 
         try {
-            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = response.data;
-
+            const { data } = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
             if (!data.erro) {
-                setValue('address.street', data.logradouro);
-                setValue('address.neighborhood', data.bairro);
-                setValue('address.city', data.localidade);
-                setValue('address.state', data.uf);
-                setValue('address.country', data.pais);
+                setValue('address.street', data.logradouro, { shouldValidate: true });
+                setValue('address.neighborhood', data.bairro, { shouldValidate: true });
+                setValue('address.city', data.localidade, { shouldValidate: true });
+                setValue('address.state', data.uf, { shouldValidate: true });
+                setValue('address.country', 'Brasil', { shouldValidate: true });
             }
         } catch (error) {
             console.error("Erro ao buscar CEP:", error);
         }
     };
 
+
+    const handleFormSubmit: SubmitHandler<ChurchRequestDTO> = (data) => {
+
+        const finalData = {
+            ...data,
+            pastorLocalId: data.pastorLocalId || null,
+        };
+        onSubmit(finalData);
+    };
+
     return (
-        <form onSubmit={handleSubmit(handleFormSubmint)} noValidate>
-            <div className="row">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="church-form" noValidate>
+            <div className="row g-3">
+
+                <div className="col-12"><h5>Dados da Igreja</h5></div>
+
                 <div className="col-md-6">
-                    <label htmlFor="name">Nome</label>
-                    <input
-                        id="name"
-                        {...register("name", { required: "Nome é obrigatório" })}
-                        className={`form-control ${errors.name ? "is-invalid" : ""}`}
-                    />
+                    <label htmlFor="name" className="form-label">Nome da Igreja</label>
+                    <input id="name" {...register('name', { required: 'Nome é obrigatório' })} className={`form-control ${errors.name ? 'is-invalid' : ''}`} />
                     {errors.name && <div className="invalid-feedback">{errors.name.message}</div>}
                 </div>
 
                 <div className="col-md-6">
-                    <label htmlFor="tradeName">Nome fantasia</label>
-                    <input
-                        id="tradeName"
-                        {...register("tradeName")}
-                        className={`form-control ${errors.tradeName ? "is-invalid" : ""}`}
-                    />
+                    <label htmlFor="tradeName" className="form-label">Nome Fantasia</label>
+                    <input id="tradeName" {...register('tradeName', { required: 'Nome Fantasia é obrigatório' })} className={`form-control ${errors.tradeName ? 'is-invalid' : ''}`} />
+                    {errors.tradeName && <div className="invalid-feedback">{errors.tradeName.message}</div>}
                 </div>
-                <div className="col-md-6 mb-3">
+
+                <div className="col-md-4">
                     <label htmlFor="registryType" className="form-label">Tipo de Registro</label>
                     <select id="registryType" {...register('registryType')} className="form-select">
-                        {Object.values(RegistryType).map((type) => (
-                            <option key={type} value={type}>
-                                {type}
-                            </option>
-                        ))}
+                        {Object.values(RegistryType).map(type => <option key={type} value={type}>{type}</option>)}
                     </select>
                 </div>
-                <div className="col-md-6">
-                    <label htmlFor="registryNumber">Número de registro</label>
-                    <input
-                        id="registryNumber"
-                        {...register("registryNumber", { required: "Número de registro é obrigatório" })}
-                        className={`form-control ${errors.registryNumber ? "is-invalid" : ""}`}
+
+                <div className="col-md-8">
+                    <label htmlFor="registryNumber" className="form-label">Número do Registro</label>
+                    <Controller name="registryNumber" control={control} rules={{ required: 'Número de registro é obrigatório' }}
+                        render={({ field }) => (
+                            <IMaskInput mask={[{ mask: '00.000.000/0000-00' }, { mask: '000000000' }]} id="registryNumber" value={field.value || ''} onAccept={field.onChange} className={`form-control ${errors.registryNumber ? 'is-invalid' : ''}`} />
+                        )}
                     />
                     {errors.registryNumber && <div className="invalid-feedback">{errors.registryNumber.message}</div>}
                 </div>
+
                 <div className="col-md-6">
-                    <label htmlFor="foundationDate">Data de fundação</label>
-                    <input
-                        type="date"
-                        id="foundationDate"
-                        {...register("foundationDate", { required: "Data de fundação é obrigatória" })}
-                        className={`form-control ${errors.foundationDate ? "is-invalid" : ""}`}
-                    />
+                    <label htmlFor="foundationDate" className="form-label">Data de Fundação</label>
+                    <input type="date" id="foundationDate" {...register('foundationDate', { required: 'Data de fundação é obrigatória' })} className={`form-control ${errors.foundationDate ? 'is-invalid' : ''}`} />
                     {errors.foundationDate && <div className="invalid-feedback">{errors.foundationDate.message}</div>}
                 </div>
-                <div className="col-md-6 mb-3">
+
+                <div className="col-md-6">
                     <label htmlFor="pastorLocalId" className="form-label">ID do Pastor Local (Opcional)</label>
                     <input type="number" id="pastorLocalId" {...register('pastorLocalId', { valueAsNumber: true })} className="form-control" />
                 </div>
-            </div>
 
-            <hr />
-            <h5 className="mt-4">Endereço</h5>
-            <div className="row">
-                <div className="col-md-8 mb-3">
+
+                <div className="col-12"><hr /><h5>Endereço</h5></div>
+
+                <div className="col-md-4">
+                    <label htmlFor="address.zipCode" className="form-label">CEP</label>
+                    <Controller name="address.zipCode" control={control} rules={{ required: 'CEP é obrigatório' }}
+                        render={({ field }) => (
+                            <IMaskInput mask="00000-000" id="address.zipCode" value={field.value || ''} onAccept={field.onChange} onBlur={handleCepBlur} className={`form-control ${errors.address?.zipCode ? 'is-invalid' : ''}`} />
+                        )}
+                    />
+                    {errors.address?.zipCode && <div className="invalid-feedback">{errors.address.zipCode.message}</div>}
+                </div>
+
+                <div className="col-md-8">
                     <label htmlFor="address.street" className="form-label">Logradouro</label>
                     <input id="address.street" {...register('address.street', { required: 'Logradouro é obrigatório' })} className="form-control" />
                 </div>
@@ -154,7 +147,7 @@ const ChurchForm: React.FC<ChurchFormProps> = ({
                 </div>
                 <div className="col-md-6 mb-3">
                     <label htmlFor="address.zipCode" className="form-label">CEP</label>
-                    {/* 4. Adicione o evento onBlur no campo do CEP */}
+
                     <input
                         id="address.zipCode"
                         {...register('address.zipCode', { required: 'CEP é obrigatório' })}
