@@ -18,6 +18,7 @@ export interface ChurchRequestDTO{
     state: string;
     country: string;
     zipCode: string;
+    nationality: string
   };
 }
 

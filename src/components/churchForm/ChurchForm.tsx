@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import type { SubmitHandler } from 'react-hook-form';
-import { IMaskInput } from 'react-imask'; // Usando a biblioteca de máscara correta
+import { IMaskInput } from 'react-imask';
 import axios from 'axios';
 import type { ChurchRequestDTO } from '../../services/church/ChurchService';
 import { RegistryType } from '../../enums/RegistryType';
@@ -17,15 +17,22 @@ interface ChurchFormProps {
 const ChurchForm: React.FC<ChurchFormProps> = ({ initialData, onSubmit, onCancel, isSubmitting }) => {
     const { control, handleSubmit, formState: { errors }, setValue, register } = useForm<ChurchRequestDTO>({
         defaultValues: initialData || {
-            name: "",
-            tradeName: "",
-            registryType: RegistryType.CNPJ, 
-            registryNumber: "",
-            foundationDate: "",
-            pastorLocalId: undefined, 
+            name: '',
+            tradeName: '',
+            registryType: RegistryType.CNPJ,
+            registryNumber: '',
+            foundationDate: '',
+            pastorLocalId: null,
             address: {
-                street: "", number: "", complement: "", neighborhood: "",
-                city: "", state: "", country: "", zipCode: ""
+                street: '',
+                number: '',
+                complement: '',
+                neighborhood: '',
+                city: '',
+                state: '',
+                country: '',
+                zipCode: '',
+                nationality: ''
             }
         },
     });
@@ -48,12 +55,11 @@ const ChurchForm: React.FC<ChurchFormProps> = ({ initialData, onSubmit, onCancel
         }
     };
 
-
     const handleFormSubmit: SubmitHandler<ChurchRequestDTO> = (data) => {
 
         const finalData = {
             ...data,
-            pastorLocalId: data.pastorLocalId || null,
+            pastorLocalId: data.pastorLocalId ? Number(data.pastorLocalId) : null,
         };
         onSubmit(finalData);
     };
@@ -61,7 +67,7 @@ const ChurchForm: React.FC<ChurchFormProps> = ({ initialData, onSubmit, onCancel
     return (
         <form onSubmit={handleSubmit(handleFormSubmit)} className="church-form" noValidate>
             <div className="row g-3">
-
+                {/* --- DADOS DA IGREJA --- */}
                 <div className="col-12"><h5>Dados da Igreja</h5></div>
 
                 <div className="col-md-6">
@@ -77,20 +83,24 @@ const ChurchForm: React.FC<ChurchFormProps> = ({ initialData, onSubmit, onCancel
                 </div>
 
                 <div className="col-md-4">
-                    <label htmlFor="registryType" className="form-label">Tipo de Registro</label>
+                    <label htmlFor="registry.tipoRegistro" className="form-label">Tipo de Registro</label>
                     <select id="registryType" {...register('registryType')} className="form-select">
                         {Object.values(RegistryType).map(type => <option key={type} value={type}>{type}</option>)}
                     </select>
                 </div>
 
                 <div className="col-md-8">
-                    <label htmlFor="registryNumber" className="form-label">Número do Registro</label>
+                    <label htmlFor="registry.numeroRegistro" className="form-label">Número do Registro</label>
                     <Controller name="registryNumber" control={control} rules={{ required: 'Número de registro é obrigatório' }}
                         render={({ field }) => (
-                            <IMaskInput mask={[{ mask: '00.000.000/0000-00' }, { mask: '000000000' }]} id="registryNumber" value={field.value || ''} onAccept={field.onChange} className={`form-control ${errors.registryNumber ? 'is-invalid' : ''}`} />
+                            <IMaskInput
+                                mask={[{ mask: '00.000.000/0000-00' }, { mask: '000000000' }]}
+                                id="registry.numeroRegistro" value={field.value || ''} onAccept={field.onChange}
+                                className={`form-control ${errors.registry?.registryNumber ? 'is-invalid' : ''}`}
+                            />
                         )}
                     />
-                    {errors.registryNumber && <div className="invalid-feedback">{errors.registryNumber.message}</div>}
+                    {errors.registry?.registryType && <div className="invalid-feedback">{errors.registry.registryNumber.message}</div>}
                 </div>
 
                 <div className="col-md-6">
@@ -101,9 +111,8 @@ const ChurchForm: React.FC<ChurchFormProps> = ({ initialData, onSubmit, onCancel
 
                 <div className="col-md-6">
                     <label htmlFor="pastorLocalId" className="form-label">ID do Pastor Local (Opcional)</label>
-                    <input type="number" id="pastorLocalId" {...register('pastorLocalId', { valueAsNumber: true })} className="form-control" />
+                    <input type="number" id="pastorLocalId" {...register('pastorLocalId')} className="form-control" />
                 </div>
-
 
                 <div className="col-12"><hr /><h5>Endereço</h5></div>
 
@@ -114,12 +123,10 @@ const ChurchForm: React.FC<ChurchFormProps> = ({ initialData, onSubmit, onCancel
                             <IMaskInput mask="00000-000" id="address.zipCode" value={field.value || ''} onAccept={field.onChange} onBlur={handleCepBlur} className={`form-control ${errors.address?.zipCode ? 'is-invalid' : ''}`} />
                         )}
                     />
-                    {errors.address?.zipCode && <div className="invalid-feedback">{errors.address.zipCode.message}</div>}
                 </div>
-
                 <div className="col-md-8">
                     <label htmlFor="address.street" className="form-label">Logradouro</label>
-                    <input id="address.street" {...register('address.street', { required: 'Logradouro é obrigatório' })} className="form-control" />
+                    <input id="address.street" {...register('address.street', { required: 'Logradouro é obrigatório' })} className={`form-control ${errors.address?.street ? 'is-invalid' : ''}`} />
                 </div>
                 <div className="col-md-4 mb-3">
                     <label htmlFor="address.number" className="form-label">Número</label>
@@ -145,15 +152,9 @@ const ChurchForm: React.FC<ChurchFormProps> = ({ initialData, onSubmit, onCancel
                     <label htmlFor="address.country" className="form-label">País</label>
                     <input id="address.country" {...register('address.country', { required: 'País é obrigatório' })} className="form-control" />
                 </div>
-                <div className="col-md-6 mb-3">
-                    <label htmlFor="address.zipCode" className="form-label">CEP</label>
-
-                    <input
-                        id="address.zipCode"
-                        {...register('address.zipCode', { required: 'CEP é obrigatório' })}
-                        className="form-control"
-                        onBlur={handleCepBlur}
-                    />
+                <div className="col-md-8">
+                    <label htmlFor="address.nationality" className="form-label">Nacionalidade</label>
+                    <input id="address.nationality" {...register('address.nationality', { required: 'Nacionalidade é obrigatória' })} className={`form-control ${errors.address?.nationality ? 'is-invalid' : ''}`} />
                 </div>
             </div>
 
