@@ -35,14 +35,8 @@ interface Member {
     churchCounty: string;
 }
 
-interface Church {
-    id: number;
-    name: string;
-}
-
 const MemberPage = () => {
     const [members, setMembers] = useState<Member[]>([]);
-    const [churches, setChurches] = useState<Church[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [modalContent, setModalContent] = useState({
         title: "",
@@ -74,24 +68,10 @@ const MemberPage = () => {
         }
     };
 
-    const fetchChurches = async () => {
-        try {
-            const response = await api.get<Church[]>("/igrejas");
-            setChurches(response.data);
-        } catch {
-            setModalContent({
-                title: "Erro ao carregar igrejas",
-                message: "Não foi possível carregar a lista de igrejas. Tente novamente mais tarde.",
-                type: "error",
-            });
-            setIsInfoModalOpen(true);
-        }
-    };
 
     useEffect(() => {
         if (user) {
             fetchMembers();
-            fetchChurches();
         }
     }, [user]);
 
@@ -321,7 +301,6 @@ const MemberPage = () => {
                     onSubmit={handleCreateSubmit}
                     onCancel={closeCreateModal}
                     isSubmitting={isSubmitting}
-                    churches={churches}
                 />
             </Modal>
 
@@ -342,7 +321,6 @@ const MemberPage = () => {
                         onSubmit={handleEditSubmit}
                         onCancel={closeEditModal}
                         isSubmitting={isSubmitting}
-                        churches={churches}
                     />
                 </Modal>
             )}

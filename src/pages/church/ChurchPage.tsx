@@ -6,7 +6,6 @@ import Modal from '../../components/Modal';
 import ChurchForm from '../../components/churchForm/ChurchForm';
 import { FaEdit, FaTrash, FaEye } from 'react-icons/fa';
 
-
 const ChurchPage: React.FC = () => {
     const [churches, setChurches] = useState<Church[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -31,6 +30,7 @@ const ChurchPage: React.FC = () => {
 
     useEffect(() => {
         fetchChurches();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const closeModal = () => {
@@ -50,6 +50,7 @@ const ChurchPage: React.FC = () => {
     const handleDelete = (church: Church) => { setSelectedChurch(church); setModalType('delete'); setIsModalOpen(true); };
     const handleDetails = (church: Church) => { setSelectedChurch(church); setModalType('details'); setIsModalOpen(true); };
 
+
     const onFormSubmit = async (data: ChurchRequestDTO) => {
         setIsSubmitting(true);
         try {
@@ -62,14 +63,19 @@ const ChurchPage: React.FC = () => {
             }
             closeModal();
             fetchChurches();
-        } catch (error) {
-            const errorMessage = (error as any).response?.data?.message || 'Ocorreu um erro ao salvar a igreja.';
-            handleShowInfoModal('Erro', errorMessage);
+        } catch (error: unknown) {
+            let message = 'Ocorreu um erro ao salvar a igreja.';
+            if (typeof error === 'object' && error !== null && 'response' in error) {
+                const err = error as { response?: { data?: { message?: string } } };
+                message = err.response?.data?.message || message;
+            }
+            handleShowInfoModal('Erro', message);
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    
     const onDeleteConfirm = async () => {
         if (!selectedChurch) return;
         setIsSubmitting(true);
@@ -85,7 +91,7 @@ const ChurchPage: React.FC = () => {
         }
     };
 
-    if (loading) return <div className="loading-message">Carregando igrejas...</div>;
+    if (loading) return <div className="loading-message">Carregando...</div>;
 
     return (
         <div className="page-container">
@@ -106,41 +112,71 @@ const ChurchPage: React.FC = () => {
                     <thead>
                         <tr>
                             <th>Nome</th>
+                            <th>Nome Fantasia</th>
                             <th>Cidade/País</th>
                             <th>Pastor Local</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {churches.length > 0 ? (
-                            churches.map(church => (
-                                <tr key={church.id}>
-                                    <td>{church.name} ({church.tradeName})</td>
-                                    <td>{church.address.city} / {church.address.country}</td>
-                                    <td>{church.pastorLocalName || 'Não definido'}</td>
-                                    <td className="actions-cell">
-                                        <button className="btn btn-sm btn-info me-2" onClick={() => handleDetails(church)} title="Ver Detalhes"><FaEye /></button>
-                                        <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(church)} title="Editar"><FaEdit /></button>
-                                        <button className="btn btn-sm btn-danger" onClick={() => handleDelete(church)} title="Excluir"><FaTrash /></button>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan={4} className="text-center">Nenhuma igreja encontrada.</td>
+                        {churches.map(church => (
+                            <tr key={church.id}>
+                                <td>{church.name}</td>
+                                <td>{church.tradeName}</td>
+                                <td>{church.address.city} / {church.address.country}</td>
+                                <td>{church.pastorLocalName || 'Não definido'}</td>
+                                <td className="actions-cell">
+                                    <button className="btn btn-sm btn-info me-2" onClick={() => handleDetails(church)} title="Ver Detalhes"><FaEye /></button>
+                                    <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(church)} title="Editar"><FaEdit /></button>
+                                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(church)} title="Excluir"><FaTrash /></button>
+                                </td>
                             </tr>
-                        )}
+                        ))}
                     </tbody>
                 </table>
             </div>
 
             <Modal isOpen={isModalOpen && (modalType === 'create' || modalType === 'edit')} onClose={closeModal} title={modalType === 'create' ? 'Adicionar Nova Igreja' : `Editar Igreja: ${selectedChurch?.name}`}>
-                <ChurchForm
-                    onSubmit={onFormSubmit}
-                    onCancel={closeModal}
-                    isSubmitting={isSubmitting}
-                    initialData={modalType === 'edit' ? selectedChurch : undefined}
-                />
+                {(() => {
+                    let nationality = '';
+                    if (
+                        selectedChurch &&
+                        'nationality' in selectedChurch.address &&
+                        typeof (selectedChurch.address as { nationality?: string }).nationality === 'string'
+                    ) {
+                        nationality = (selectedChurch.address as { nationality: string }).nationality;
+                    }
+                    return (
+                        <ChurchForm
+                            onSubmit={onFormSubmit}
+                            onCancel={closeModal}
+                            isSubmitting={isSubmitting}
+                            initialData={
+                                modalType === 'edit' && selectedChurch
+                                    ? {
+                                        name: selectedChurch.name,
+                                        tradeName: selectedChurch.tradeName,
+                                        registryType: selectedChurch.registryType,
+                                        registryNumber: selectedChurch.registryNumber,
+                                        foundationDate: selectedChurch.foundationDate,
+                                        pastorLocalId: selectedChurch.pastorLocalId || null,
+                                        address: {
+                                            street: selectedChurch.address.street,
+                                            number: selectedChurch.address.number,
+                                            complement: selectedChurch.address.complement || '',
+                                            neighborhood: selectedChurch.address.neighborhood,
+                                            city: selectedChurch.address.city,
+                                            state: selectedChurch.address.state,
+                                            country: selectedChurch.address.country,
+                                            zipCode: selectedChurch.address.zipCode,
+                                            nationality
+                                        }
+                                    }
+                                    : undefined
+                            }
+                        />
+                    );
+                })()}
             </Modal>
 
             {selectedChurch && (
@@ -175,4 +211,5 @@ const ChurchPage: React.FC = () => {
         </div>
     );
 }
+
 export default ChurchPage;

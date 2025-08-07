@@ -1,80 +1,58 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../context/useAuth';
-import { Modal } from '../components';
+import './Login.css'; 
+const Login: React.FC = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-interface AuthRequest {
-    username: string;
-    password: string;
-}
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+    try {
+      await login({ username, password });
+      navigate('/');
+    } catch (err: unknown) {
+      let message = 'Credenciais inválidas.';
+      if (typeof err === 'object' && err !== null && 'message' in err) {
+        message = (err as { message?: string }).message || message;
+      }
+      setError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-const Login = () => {
-    const [username, setUsername] = useState(''); 
-    const [password, setPassword] = useState(''); 
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    // Estados para o modal de ERRO
-    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-
-    const { login } = useAuth();
-    const navigate = useNavigate();
-
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setIsErrorModalOpen(false); 
-
-        try {
-            const credentials: AuthRequest = { username, password };
-            await login(credentials);
-            navigate('/'); // Redireciona para o Dashboard (raiz do site)
-
-        } catch (error: unknown) {
-
-            const message = (error as Error).message || 'Erro inesperado. Tente novamente.';
-            setErrorMessage(message);
-            setIsErrorModalOpen(true);
-        } finally {
-            setIsSubmitting(false); 
-        }
-    };
-
-    return (
-        <div className="container mt-5">
-            <div className="row justify-content-center">
-                <div className="col-md-6">
-                    <div className="card">
-                        <h5 className="card-header text-center">Login</h5>
-                        <div className="card-body">
-                            <form onSubmit={handleLogin}>
-                                <div className="mb-3">
-                                    <label htmlFor="username" className="form-label">Nome de Usuário</label>
-                                    <input type="text" className="form-control" id="username" value={username} onChange={e => setUsername(e.target.value)} required disabled={isSubmitting} />
-                                </div>
-                                <div className="mb-3">
-                                    <label htmlFor="password" className="form-label">Senha</label>
-                                    <input type="password" className="form-control" id="password" value={password} onChange={e => setPassword(e.target.value)} required disabled={isSubmitting} />
-                                </div>
-                                <button type="submit" className="btn btn-primary w-100" disabled={isSubmitting}>
-                                    {isSubmitting ? 'Entrando...' : 'Entrar'}
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <Modal 
-                isOpen={isErrorModalOpen} 
-                onClose={() => setIsErrorModalOpen(false)} 
-                title="Erro ao Efetuar Login" 
-                type="error"
-            >
-                <p>{errorMessage}</p>
-            </Modal>
+  return (
+    <div className="login-page">
+      <div className="login-container">
+        <div className="login-header">
+          <img src="/logo-login.png" alt="IGR Logo" className="login-logo" />
+          <h2>Bem-vindo(a)</h2>
+          <p>Sistema de Gerenciamento IGR</p>
         </div>
-    );
-}
+        <form onSubmit={handleLogin} className="login-form">
+          {error && <div className="alert alert-danger">{error}</div>}
+          <div className="form-group">
+            <label htmlFor="username">Nome de Usuário</label>
+            <input type="text" id="username" value={username} onChange={e => setUsername(e.target.value)} required disabled={isSubmitting} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Senha</label>
+            <input type="password" id="password" value={password} onChange={e => setPassword(e.target.value)} required disabled={isSubmitting} />
+          </div>
+          <button type="submit" className="login-button" disabled={isSubmitting}>
+            {isSubmitting ? 'Entrando...' : 'Entrar'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 export default Login;

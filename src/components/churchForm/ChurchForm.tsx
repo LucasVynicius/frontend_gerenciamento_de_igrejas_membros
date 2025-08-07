@@ -96,11 +96,12 @@ const ChurchForm: React.FC<ChurchFormProps> = ({ initialData, onSubmit, onCancel
                             <IMaskInput
                                 mask={[{ mask: '00.000.000/0000-00' }, { mask: '000000000' }]}
                                 id="registry.numeroRegistro" value={field.value || ''} onAccept={field.onChange}
-                                className={`form-control ${errors.registry?.registryNumber ? 'is-invalid' : ''}`}
+                                className={`form-control ${errors.registryNumber ? 'is-invalid' : ''}`}
                             />
                         )}
                     />
-                    {errors.registry?.registryType && <div className="invalid-feedback">{errors.registry.registryNumber.message}</div>}
+                    {errors.registryType && <div className="invalid-feedback">{errors.registryType.message}</div>}
+                    {errors.registryNumber && <div className="invalid-feedback">{errors.registryNumber.message}</div>}
                 </div>
 
                 <div className="col-md-6">

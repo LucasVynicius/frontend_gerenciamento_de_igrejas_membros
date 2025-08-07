@@ -1,24 +1,45 @@
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { FaHome, FaUsers, FaChurch, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { NavLink } from 'react-router-dom';
+import { FaHome, FaUsers, FaChurch, FaCog, FaSignOutAlt, FaUserCog } from 'react-icons/fa';
+import useAuth from '../../context/useAuth'; 
+import { Role } from '../../enums/Role';
 import './Sidebar.css';
 
 const Sidebar: React.FC = () => {
+
+  const { user, logout } = useAuth();
+
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <img src="./logo.png" alt="Logo" className="sidebar-logo" />
+        <NavLink to="/" >
+            <img src="/logo.png" alt="Logo" className="sidebar-logo" />
+        </NavLink>
       </div>
       <nav className="sidebar-nav">
         <ul>
-          <li><NavLink to="/" end className="nav-item active"><FaHome /><span>Dashboard</span></NavLink></li>
-          <li><Link to="/membros" className="nav-item"><FaUsers /><span>Membros</span></Link></li>
-          <li><Link to="/igrejas" className="nav-item"><FaChurch /><span>Igrejas</span></Link></li>
-          <li><Link to="/configuracoes" className="nav-item"><FaCog /><span>Configurações</span></Link></li>
+          
+          <li><NavLink to="/" end className="nav-item"><FaHome /><span>Dashboard</span></NavLink></li>
+          <li><NavLink to="/membros" className="nav-item"><FaUsers /><span>Membros</span></NavLink></li>
+          <li><NavLink to="/igrejas" className="nav-item"><FaChurch /><span>Igrejas</span></NavLink></li>
+          <li><NavLink to="/configuracoes" className="nav-item"><FaCog /><span>Configurações</span></NavLink></li>
+          
+          {user?.role === Role.ADMIN && (
+            <li>
+              <NavLink to="/admin/users" className="nav-item">
+                <FaUserCog />
+                <span>Gerenciar Usuários</span>
+              </NavLink>
+            </li>
+          )}
         </ul>
       </nav>
       <div className="sidebar-footer">
-        <button className="logout-btn"><FaSignOutAlt /><span>Sair</span></button>
+
+        <button onClick={logout} className="logout-btn">
+          <FaSignOutAlt />
+          <span>Sair</span>
+        </button>
       </div>
     </div>
   );

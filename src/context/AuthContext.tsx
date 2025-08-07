@@ -1,103 +1,86 @@
-import React, { createContext, useEffect } from 'react'
-import { getAuth } from '../utils/authUtils';
+// Em: src/context/AuthContext.tsx
+
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import { login as apiLogin } from '../services/authService';
-import api from '../services/api';
+import type { AuthRequest } from '../services/authService';
 import { getMyInfo } from '../services/user/userService';
-import { removeAuth } from '../utils/authUtils';
+import type { UserInfo } from '../services/user/userService';
+import { api } from '../services/api';
 
-
-interface UserInfo {
-    username: string;
-    email: string;
-    role: 'ADMIN' | 'SECRETARY' | 'ROLE_ADMIN' | 'ROLE_SECRETARY';
-}
-
-interface AuthRequest {
-    username: string;
-    password: string;
-}
-
+// 1. Interface que define o que nosso contexto irá fornecer
 interface AuthContextType {
-    user: UserInfo | null;
-    isAuthenticated: boolean;
-    login: (credentials: AuthRequest) => Promise<void>;
-    logout: () => void;
-    loading: boolean;
+  isAuthenticated: boolean;
+  user: UserInfo | null;
+  loading: boolean;
+  login: (credentials: AuthRequest) => Promise<void>;
+  logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// 2. Criação do Contexto
+// Ele é criado aqui e será usado pelo nosso hook e pelo Provider
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [user, setUser] = React.useState<UserInfo | null>(null);
-    const [loading, setLoading] = React.useState<boolean>(true);
+// 3. O componente Provedor (seu código, já estava ótimo)
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<UserInfo | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        const loadUser = async () => {
-            const { accessToken } = getAuth();
-            if (accessToken) {
-                try {
-                    // Se quiser manter o fluxo antigo, pode buscar pelo authService.getLoggedInUser
-                    // const userInfo: UserInfo = await getMyInfo();
-                    // setUser(userInfo);
-                    setUser(null); // ou buscar pelo userService se preferir
-                } catch {
-                    removeAuth();
-                    setUser(null);
-                } finally {
-                    setLoading(false);
-                }
-            } else {
-                setLoading(false);
-            }
-        };
-        loadUser();
-    }, []);
+  useEffect(() => {
+    const validateToken = async () => {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        try {
+          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          const userInfo = await getMyInfo();
+          setUser(userInfo);
+          setIsAuthenticated(true);
+        } catch (error) {
+          console.error("Token salvo é inválido, limpando sessão:", error);
+          logout();
+        }
+      }
+      setLoading(false);
+    };
+    validateToken();
+  }, []);
 
-    const login = async (credentials: AuthRequest) => {
+  const login = async (credentials: AuthRequest) => {
     try {
-      // Passo 1: Chama o authService para obter o token
       const { accessToken } = await apiLogin(credentials);
-
-      // Passo 2: Salva o token no localStorage
       localStorage.setItem('accessToken', accessToken);
-
-      // Passo 3: Configura o header padrão do Axios para futuras requisições
       api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-
-      // Passo 4: AGORA chama o userService para buscar os dados do usuário
       const userInfo = await getMyInfo();
-      
-      // Passo 5: Salva os dados do usuário no estado e finaliza o login
-      // Converte role para o formato esperado
-      const normalizedUserInfo: UserInfo = {
-        ...userInfo,
-        role:
-          userInfo.role === 'ROLE_ADMIN' ? 'ADMIN' :
-          userInfo.role === 'ROLE_SECRETARY' ? 'SECRETARY' : userInfo.role
-      };
-      setUser(normalizedUserInfo);
-
+      setUser(userInfo);
+      setIsAuthenticated(true);
     } catch (error) {
-      console.error("Falha no fluxo de login:", error);
-      // Limpa tudo em caso de falha
       logout();
-      throw error; // Lança o erro para o componente Login poder exibi-lo
+      throw error;
     }
   };
 
-    const logout = () => {
-        removeAuth();
-        setUser(null);
-    };
+  const logout = () => {
+    setUser(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem('accessToken');
+    delete api.defaults.headers.common['Authorization'];
+  };
 
-    const isAuthenticated = user !== null;
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, user, loading, login, logout }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+};
 
-    return (
-        <AuthContext.Provider value={{ user, isAuthenticated, login, logout, loading }}>
-            {children}
-        </AuthContext.Provider>
-    );
-}
+// 4. O Hook Customizado (useAuth)
+// Ele agora vive no mesmo arquivo, garantindo que sempre terá acesso ao AuthContext
+const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+  }
+  return context;
+};
 
-
-export default AuthContext;
+export default useAuth;

@@ -1,6 +1,8 @@
 import React from 'react';
 import DashboardCard from '../../components/dashboard/DashboardCard';
-import { FaUsers, FaChurch, FaLaptopCode, FaLock, FaFileAlt } from 'react-icons/fa';
+import { FaUsers, FaChurch, FaLaptopCode, FaLock, FaFileAlt, FaUserCog } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { Role } from '../../enums/Role';
 import './Dashboard.css';
 import useAuth from '../../context/useAuth';
 
@@ -21,11 +23,11 @@ const Dashboard: React.FC = () => {
                 <DashboardCard icon={<FaLaptopCode />} title="Ministérios" link="/ministerios" />
                 <DashboardCard icon={<FaLock />} title="Permissões" link="/permissoes" />
                 <DashboardCard icon={<FaFileAlt />} title="Relatórios" link="/relatorios" />
+                {user?.role === 'ADMIN' && (
+                    <DashboardCard icon={<FaUserCog />} title="Gerenciar Usuários" link="/admin/users" />
+                )}
             </div>
         </div>
-
-
-
     );
 };
 
