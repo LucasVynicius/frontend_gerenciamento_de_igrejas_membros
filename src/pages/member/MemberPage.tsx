@@ -235,6 +235,7 @@ const MemberPage = () => {
                             <th>CPF</th>
                             <th>Telefone</th>
                             <th>Igreja</th>
+                            <th>Nome Fantasia</th>
                             <th>Status</th>
                             <th>Ações</th>
                         </tr>
@@ -247,6 +248,7 @@ const MemberPage = () => {
                                     <td>{member.cpf}</td>
                                     <td>{member.telephone}</td>
                                     <td>{member.churchName}</td>
+                                    <td>{member.churchTradeName}</td>
                                     <td>{member.active ? "Ativo" : "Inativo"}</td>
                                     <td className="actions-cell">
                                         <button

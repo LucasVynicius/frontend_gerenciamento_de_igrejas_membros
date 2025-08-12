@@ -1,13 +1,11 @@
-// Em: src/context/AuthContext.tsx
-
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { login as apiLogin } from '../services/authService';
-import type { AuthRequest } from '../services/authService';
 import { getMyInfo } from '../services/user/userService';
-import type { UserInfo } from '../services/user/userService';
 import { api } from '../services/api';
 
-// 1. Interface que define o que nosso contexto irá fornecer
+import type { AuthRequest } from '../services/authService';
+import type { UserInfo } from '../services/user/userService';
+
 interface AuthContextType {
   isAuthenticated: boolean;
   user: UserInfo | null;
@@ -16,71 +14,67 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// 2. Criação do Contexto
-// Ele é criado aqui e será usado pelo nosso hook e pelo Provider
+const AuthLoader: React.FC = () => (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#272b33' }}>
+        <h2 style={{ color: '#f5f5f5' }}>Carregando sua sessão...</h2>
+    </div>
+);
+
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// 3. O componente Provedor (seu código, já estava ótimo)
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserInfo | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [user, setUser] = useState<UserInfo | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    
+    const isAuthenticated = !!user;
 
-  useEffect(() => {
-    const validateToken = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
+    const logout = useCallback(() => {
+        setUser(null);
+        localStorage.removeItem('accessToken');
+        delete api.defaults.headers.common['Authorization'];
+    }, []);
+
+
+    useEffect(() => {
+        const validateToken = async () => {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                try {
+                    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                    const userInfo = await getMyInfo();
+                    setUser(userInfo);
+                } catch (error) {
+                    console.error("Token salvo é inválido, limpando sessão:", error);
+                    logout();
+                }
+            }
+            setLoading(false);
+        };
+        validateToken();
+    }, [logout]);
+
+    const login = useCallback(async (credentials: AuthRequest) => {
         try {
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          const userInfo = await getMyInfo();
-          setUser(userInfo);
-          setIsAuthenticated(true);
+            const { accessToken } = await apiLogin(credentials);
+            localStorage.setItem('accessToken', accessToken);
+            api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+            const userInfo = await getMyInfo();
+            setUser(userInfo);
         } catch (error) {
-          console.error("Token salvo é inválido, limpando sessão:", error);
-          logout();
+            logout(); 
+            throw error;
         }
-      }
-      setLoading(false);
-    };
-    validateToken();
-  }, []);
+    }, [logout]);
 
-  const login = async (credentials: AuthRequest) => {
-    try {
-      const { accessToken } = await apiLogin(credentials);
-      localStorage.setItem('accessToken', accessToken);
-      api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-      const userInfo = await getMyInfo();
-      setUser(userInfo);
-      setIsAuthenticated(true);
-    } catch (error) {
-      logout();
-      throw error;
+    if (loading) {
+        return <AuthLoader />;
     }
-  };
-
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem('accessToken');
-    delete api.defaults.headers.common['Authorization'];
-  };
-
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, user, loading, login, logout }}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+    
+    return (
+        <AuthContext.Provider value={{ isAuthenticated, user, loading: false, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
-// 4. O Hook Customizado (useAuth)
-// Ele agora vive no mesmo arquivo, garantindo que sempre terá acesso ao AuthContext
-const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
-  }
-  return context;
-};
-
-export default useAuth;
+export default AuthProvider;

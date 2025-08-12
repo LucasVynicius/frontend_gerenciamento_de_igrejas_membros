@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import useAuth from '../../context/useAuth';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../../context/useAuth'; // Assumindo que o hook foi movido
 import { getAllUsers, createUser, activateUser, resetUserPassword, deleteUser } from '../../services/user/userService';
 import type { UserInfo, UserRequestDTO } from '../../services/user/userService';
 import Modal from '../../components/Modal';
@@ -18,99 +18,107 @@ const AdminUserPage: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { user: loggedInUser } = useAuth();
 
-    const fetchUsers = async () => {
-        setLoading(true);
-        try {
-            const data = await getAllUsers();
-            setUsers(data);
-        } catch {
-            handleShowInfoModal('Erro', 'Falha ao carregar a lista de usuários.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    const closeModal = () => {
+    // 1. Envolvemos as funções em useCallback para otimização
+    const closeModal = useCallback(() => {
         setIsModalOpen(false);
         setSelectedUser(null);
         setModalType(null);
         setNewPassword('');
-    };
+    }, []);
 
-    const handleShowInfoModal = (title: string, message: string, type: 'info' | 'success' | 'error' = 'info') => {
+    const handleShowInfoModal = useCallback((title: string, message: string) => {
         setModalType('info');
         setModalContent({ title, message });
         setIsModalOpen(true);
-    };
+    }, []);
 
-    const handleCreate = () => { setModalType('create'); setIsModalOpen(true); };
-    const handleDelete = (user: UserInfo) => { setSelectedUser(user); setModalType('delete'); setIsModalOpen(true); };
-    const handleResetPassword = (user: UserInfo) => { setSelectedUser(user); setModalType('resetPassword'); setIsModalOpen(true); };
-
-    const handleToggleActivation = async (user: UserInfo) => {
+    const fetchUsers = useCallback(async () => {
+        setLoading(true);
         try {
+            const data = await getAllUsers();
+            setUsers(data);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Falha ao carregar a lista de usuários.';
+            handleShowInfoModal('Erro', errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    }, [handleShowInfoModal]);
 
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
+
+    // --- Handlers para abrir modais ---
+    const handleCreate = useCallback(() => { setModalType('create'); setIsModalOpen(true); }, []);
+    const handleDelete = useCallback((user: UserInfo) => { setSelectedUser(user); setModalType('delete'); setIsModalOpen(true); }, []);
+    const handleResetPassword = useCallback((user: UserInfo) => { setSelectedUser(user); setModalType('resetPassword'); setIsModalOpen(true); }, []);
+
+    // --- Handlers de Ações ---
+    const handleToggleActivation = useCallback(async (user: UserInfo) => {
+        try {
             await activateUser(user.id, !user.enabled);
             handleShowInfoModal('Sucesso!', `Status do usuário ${user.username} foi atualizado.`);
             fetchUsers();
-        } catch {
-            handleShowInfoModal('Erro', 'Falha ao atualizar o status do usuário.');
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Falha ao atualizar o status do usuário.';
+            handleShowInfoModal('Erro', message);
         }
-    };
+    }, [fetchUsers, handleShowInfoModal]);
 
-    const handleCreateSubmit = async (data: UserRequestDTO) => {
+    const handleCreateSubmit = useCallback(async (data: UserRequestDTO) => {
         setIsSubmitting(true);
         try {
             await createUser(data);
-            handleShowInfoModal('Sucesso!', `Usuário "${data.username}" criado. Agora precisa ser ativado.`, 'success');
+            handleShowInfoModal('Sucesso!', `Usuário "${data.username}" criado. Agora precisa ser ativado.`);
             closeModal();
             fetchUsers();
         } catch (error) {
-            handleShowInfoModal('Erro', (error as Error).message, 'error');
+            handleShowInfoModal('Erro', (error as Error).message);
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }, [closeModal, fetchUsers, handleShowInfoModal]);
 
-    const onDeleteConfirm = async () => {
+    const onDeleteConfirm = useCallback(async () => {
         if (!selectedUser) return;
         setIsSubmitting(true);
         try {
-            await deleteUser(selectedUser.id); // Certifique-se que deleteUser existe no seu userService
-            handleShowInfoModal('Sucesso!', 'Usuário excluído.', 'success');
+            await deleteUser(selectedUser.id); 
+            handleShowInfoModal('Sucesso!', 'Usuário excluído.');
             closeModal();
             fetchUsers();
-        } catch {
-            handleShowInfoModal('Erro', 'Falha ao excluir o usuário.', 'error');
+        } catch (error) {
+            handleShowInfoModal('Erro', (error as Error).message);
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }, [selectedUser, closeModal, fetchUsers, handleShowInfoModal]);
 
-    const handleResetPasswordConfirm = async () => {
-        if (!selectedUser || !newPassword) return;
+    const handleResetPasswordConfirm = useCallback(async () => {
+        if (!selectedUser || !newPassword) {
+            handleShowInfoModal('Atenção', 'Por favor, digite uma nova senha.');
+            return;
+        }
         setIsSubmitting(true);
         try {
             await resetUserPassword(selectedUser.id, newPassword);
-            handleShowInfoModal('Sucesso!', `Senha do usuário ${selectedUser.username} foi resetada.`, 'success');
+            handleShowInfoModal('Sucesso!', `Senha do usuário ${selectedUser.username} foi resetada.`);
             closeModal();
-        } catch {
-            handleShowInfoModal('Erro', 'Falha ao resetar a senha.', 'error');
+        } catch (error) {
+            handleShowInfoModal('Erro', (error as Error).message);
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }, [selectedUser, newPassword, closeModal, handleShowInfoModal]);
 
     if (loading) return <div className="loading-message">Carregando usuários...</div>;
 
+    // O JSX continua o mesmo, pois a lógica de renderização já estava correta.
     return (
         <div className="page-container">
             <div className="page-header-container">
-                <div className="page-title-group">
+                 <div className="page-title-group">
                     <h1>Gerenciamento de Usuários</h1>
                     <p>Crie, ative e gerencie os usuários do sistema.</p>
                 </div>
@@ -121,7 +129,7 @@ const AdminUserPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="table-container">
+             <div className="table-container">
                 <table>
                     <thead>
                         <tr>
@@ -165,7 +173,7 @@ const AdminUserPage: React.FC = () => {
                         <input type="password" id="newPassword" className="form-control" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                     </div>
                     <div className="modal-footer">
-                        <button className="btn btn-secondary" onClick={closeModal}>Cancelar</button>
+                        <button className="btn btn-secondary" onClick={closeModal} disabled={isSubmitting}>Cancelar</button>
                         <button className="btn btn-primary" onClick={handleResetPasswordConfirm} disabled={isSubmitting}>{isSubmitting ? 'Salvando...' : 'Salvar Nova Senha'}</button>
                     </div>
                 </Modal>
@@ -173,10 +181,12 @@ const AdminUserPage: React.FC = () => {
 
             {selectedUser && (
                 <Modal isOpen={isModalOpen && modalType === 'delete'} onClose={closeModal} title="Confirmar Exclusão">
-                    <p>Tem certeza que deseja excluir o usuário <strong>{selectedUser.username}</strong>?</p>
+                    <p>Tem certeza que deseja excluir o usuário <strong>{selectedUser.username}</strong>? Esta ação não pode ser desfeita.</p>
                     <div className="modal-footer">
-                        <button className="btn btn-secondary" onClick={closeModal}>Cancelar</button>
-                        <button className="btn btn-danger" onClick={onDeleteConfirm} disabled={isSubmitting}>{isSubmitting ? 'Excluindo...' : 'Excluir'}</button>
+                        <button className="btn btn-secondary" onClick={closeModal} disabled={isSubmitting}>Cancelar</button>
+                        <button className="btn btn-danger" onClick={onDeleteConfirm} disabled={isSubmitting}>
+                            {isSubmitting ? 'Excluindo...' : 'Sim, Excluir'}
+                        </button>
                     </div>
                 </Modal>
             )}

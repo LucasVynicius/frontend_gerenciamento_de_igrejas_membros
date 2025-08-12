@@ -1,8 +1,6 @@
 import React from 'react';
 import DashboardCard from '../../components/dashboard/DashboardCard';
 import { FaUsers, FaChurch, FaLaptopCode, FaLock, FaFileAlt, FaUserCog } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import { Role } from '../../enums/Role';
 import './Dashboard.css';
 import useAuth from '../../context/useAuth';
 
