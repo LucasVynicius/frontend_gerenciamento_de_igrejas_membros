@@ -1,57 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getChurches, createChurch, updateChurch, deleteChurch } from '../../services/church/ChurchService';
-import type { ChurchRequestDTO } from '../../services/church/ChurchService';
+import { getMinisters } from '../../services/minister/ministerService';
 import type { Church } from '../../types/church/Church';
+import type { Minister } from '../../types/minister/Minister';
 import Modal from '../../components/Modal';
 import ChurchForm from '../../components/churchForm/ChurchForm';
 import { FaEdit, FaTrash, FaEye } from 'react-icons/fa';
 
 const ChurchPage: React.FC = () => {
     const [churches, setChurches] = useState<Church[]>([]);
+    const [ministers, setMinisters] = useState<Minister[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [selectedChurch, setSelectedChurch] = useState<Church | null>(null);
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'details' | 'info' | null>(null);
     const [modalContent, setModalContent] = useState({ title: '', message: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const fetchChurches = async () => {
+    const handleShowInfoModal = useCallback((title: string, message: string) => {
+        setModalType('info');
+        setModalContent({ title, message });
+    }, []);
+
+    const fetchPageData = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await getChurches();
-            setChurches(data);
+            const [churchData, ministerData] = await Promise.all([
+                getChurches(),
+                getMinisters()
+            ]);
+            setChurches(churchData);
+            setMinisters(ministerData);
         } catch {
-            handleShowInfoModal('Erro', 'Falha ao carregar a lista de igrejas.');
+            handleShowInfoModal('Erro', 'Falha ao carregar os dados da página.');
         } finally {
             setLoading(false);
         }
-    };
+    }, [handleShowInfoModal]);
 
     useEffect(() => {
-        fetchChurches();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        fetchPageData();
+    }, [fetchPageData]);
+
+    const closeModal = useCallback(() => {
+        setModalType(null);
+        setSelectedChurch(null);
     }, []);
 
-    const closeModal = () => {
-        setIsModalOpen(false);
-        setSelectedChurch(null);
-        setModalType(null);
-    };
+    const handleCreate = useCallback(() => { setModalType('create'); }, []);
+    const handleEdit = useCallback((church: Church) => { setSelectedChurch(church); setModalType('edit'); }, []);
+    const handleDelete = useCallback((church: Church) => { setSelectedChurch(church); setModalType('delete'); }, []);
+    const handleDetails = useCallback((church: Church) => { setSelectedChurch(church); setModalType('details'); }, []);
 
-    const handleShowInfoModal = (title: string, message: string) => {
-        setModalType('info');
-        setModalContent({ title, message });
-        setIsModalOpen(true);
-    };
-
-    const handleCreate = () => { setModalType('create'); setIsModalOpen(true); };
-    const handleEdit = (church: Church) => { setSelectedChurch(church); setModalType('edit'); setIsModalOpen(true); };
-    const handleDelete = (church: Church) => { setSelectedChurch(church); setModalType('delete'); setIsModalOpen(true); };
-    const handleDetails = (church: Church) => { setSelectedChurch(church); setModalType('details'); setIsModalOpen(true); };
-
-
-    const onFormSubmit = async (data: ChurchRequestDTO) => {
+    const onFormSubmit = useCallback(async (data: Church) => {
         setIsSubmitting(true);
         try {
             if (modalType === 'create') {
@@ -62,34 +63,28 @@ const ChurchPage: React.FC = () => {
                 handleShowInfoModal('Sucesso!', 'Igreja atualizada com sucesso!');
             }
             closeModal();
-            fetchChurches();
-        } catch (error: unknown) {
-            let message = 'Ocorreu um erro ao salvar a igreja.';
-            if (typeof error === 'object' && error !== null && 'response' in error) {
-                const err = error as { response?: { data?: { message?: string } } };
-                message = err.response?.data?.message || message;
-            }
-            handleShowInfoModal('Erro', message);
+            fetchPageData();
+        } catch (error) {
+            handleShowInfoModal('Erro', (error as Error).message);
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }, [modalType, selectedChurch, closeModal, fetchPageData, handleShowInfoModal]);
 
-    
-    const onDeleteConfirm = async () => {
+    const onDeleteConfirm = useCallback(async () => {
         if (!selectedChurch) return;
         setIsSubmitting(true);
         try {
             await deleteChurch(selectedChurch.id);
             handleShowInfoModal('Sucesso!', 'Igreja excluída com sucesso!');
             closeModal();
-            fetchChurches();
-        } catch {
-            handleShowInfoModal('Erro', 'Ocorreu um erro ao excluir a igreja.');
+            fetchPageData();
+        } catch (error) {
+            handleShowInfoModal('Erro', (error as Error).message);
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }, [selectedChurch, closeModal, fetchPageData, handleShowInfoModal]);
 
     if (loading) return <div className="loading-message">Carregando...</div>;
 
@@ -136,51 +131,18 @@ const ChurchPage: React.FC = () => {
                 </table>
             </div>
 
-            <Modal isOpen={isModalOpen && (modalType === 'create' || modalType === 'edit')} onClose={closeModal} title={modalType === 'create' ? 'Adicionar Nova Igreja' : `Editar Igreja: ${selectedChurch?.name}`}>
-                {(() => {
-                    let nationality = '';
-                    if (
-                        selectedChurch &&
-                        'nationality' in selectedChurch.address &&
-                        typeof (selectedChurch.address as { nationality?: string }).nationality === 'string'
-                    ) {
-                        nationality = (selectedChurch.address as { nationality: string }).nationality;
-                    }
-                    return (
-                        <ChurchForm
-                            onSubmit={onFormSubmit}
-                            onCancel={closeModal}
-                            isSubmitting={isSubmitting}
-                            initialData={
-                                modalType === 'edit' && selectedChurch
-                                    ? {
-                                        name: selectedChurch.name,
-                                        tradeName: selectedChurch.tradeName,
-                                        registryType: selectedChurch.registryType,
-                                        registryNumber: selectedChurch.registryNumber,
-                                        foundationDate: selectedChurch.foundationDate,
-                                        pastorLocalId: selectedChurch.pastorLocalId || null,
-                                        address: {
-                                            street: selectedChurch.address.street,
-                                            number: selectedChurch.address.number,
-                                            complement: selectedChurch.address.complement || '',
-                                            neighborhood: selectedChurch.address.neighborhood,
-                                            city: selectedChurch.address.city,
-                                            state: selectedChurch.address.state,
-                                            country: selectedChurch.address.country,
-                                            zipCode: selectedChurch.address.zipCode,
-                                            nationality
-                                        }
-                                    }
-                                    : undefined
-                            }
-                        />
-                    );
-                })()}
+            <Modal isOpen={modalType === 'create' || modalType === 'edit'} onClose={closeModal} title={modalType === 'create' ? 'Adicionar Nova Igreja' : `Editar Igreja: ${selectedChurch?.name}`}>
+                <ChurchForm
+                    onSubmit={onFormSubmit}
+                    onCancel={closeModal}
+                    isSubmitting={isSubmitting}
+                    initialData={modalType === 'edit' ? selectedChurch : undefined}
+                    ministers={ministers}
+                />
             </Modal>
 
             {selectedChurch && (
-                <Modal isOpen={isModalOpen && modalType === 'delete'} onClose={closeModal} title="Confirmar Exclusão">
+                <Modal isOpen={modalType === 'delete'} onClose={closeModal} title="Confirmar Exclusão">
                     <p>Tem certeza que deseja excluir a igreja <strong>{selectedChurch.name}</strong>?</p>
                     <div className="modal-footer">
                         <button className="btn btn-secondary" onClick={closeModal} disabled={isSubmitting}>Cancelar</button>
@@ -188,9 +150,9 @@ const ChurchPage: React.FC = () => {
                     </div>
                 </Modal>
             )}
-
+            
             {selectedChurch && (
-                <Modal isOpen={isModalOpen && modalType === 'details'} onClose={closeModal} title={`Detalhes de: ${selectedChurch.name}`}>
+                <Modal isOpen={modalType === 'details'} onClose={closeModal} title={`Detalhes de: ${selectedChurch.name}`}>
                     <div>
                         <p><strong>Nome Fantasia:</strong> {selectedChurch.tradeName}</p>
                         <p><strong>Registro:</strong> {selectedChurch.registryType} - {selectedChurch.registryNumber}</p>
@@ -205,11 +167,11 @@ const ChurchPage: React.FC = () => {
                 </Modal>
             )}
 
-            <Modal isOpen={isModalOpen && modalType === 'info'} onClose={closeModal} title={modalContent.title}>
+            <Modal isOpen={modalType === 'info'} onClose={closeModal} title={modalContent.title}>
                 <p>{modalContent.message}</p>
             </Modal>
         </div>
     );
-}
+};
 
 export default ChurchPage;

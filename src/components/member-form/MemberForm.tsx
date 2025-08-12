@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import type { SubmitHandler } from 'react-hook-form';
-import { IMaskInput } from 'react-imask'; 
+import { IMaskInput } from 'react-imask';
 import { getChurches } from '../../services/church/ChurchService';
 import type { Church } from '../../types/church/Church';
-import type { MemberRequestDTO } from '../../dtos/MemberRequestDTO';
+import type { Member } from '../../types/member/Member';
 
 interface MemberFormProps {
-    initialData?: Partial<MemberRequestDTO>;
-    onSubmit: (data: MemberRequestDTO) => void;
+    initialData?: Partial<Member>;
+    onSubmit: (data: Member) => void;
     onCancel: () => void;
     isSubmitting: boolean;
 }
 
 const MemberForm: React.FC<MemberFormProps> = ({ initialData, onSubmit, onCancel, isSubmitting }) => {
     const [churches, setChurches] = useState<Church[]>([]);
-    const { control, handleSubmit, formState: { errors }, register } = useForm<MemberRequestDTO>({
+    const { control, handleSubmit, formState: { errors }, register } = useForm<Member>({
         defaultValues: initialData || { active: true },
     });
 
@@ -31,7 +31,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ initialData, onSubmit, onCancel
         fetchChurches();
     }, []);
 
-    const handleFormSubmit: SubmitHandler<MemberRequestDTO> = (data) => {
+    const handleFormSubmit: SubmitHandler<Member> = (data) => {
         const finalData = {
             ...data,
             idChurch: Number(data.idChurch),
@@ -134,10 +134,16 @@ const MemberForm: React.FC<MemberFormProps> = ({ initialData, onSubmit, onCancel
                 </div>
                 <div className="col-12 col-md-6">
                     <label htmlFor="idChurch" className="form-label">Igreja</label>
-                    <select id="idChurch" {...register('idChurch', { required: 'Igreja é obrigatória' })} className={`form-select ${errors.idChurch ? 'is-invalid' : ''}`}>
-                        <option value="">Selecione...</option>
+                    <select
+                        id="idChurch"
+                        {...register('idChurch', { required: 'Igreja é obrigatória' })}
+                        className={`form-select ${errors.idChurch ? 'is-invalid' : ''}`}
+                    >
+                        <option value="">Selecione uma igreja...</option>
                         {churches.map(church => (
-                            <option key={church.id} value={church.id}>{church.name}</option>
+                            <option key={church.id} value={church.id}>
+                                {`${church.name} - ${church.tradeName}`}
+                            </option>
                         ))}
                     </select>
                     {errors.idChurch && <div className="invalid-feedback">{errors.idChurch.message}</div>}

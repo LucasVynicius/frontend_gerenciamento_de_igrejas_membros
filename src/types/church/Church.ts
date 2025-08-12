@@ -1,3 +1,5 @@
+import { AddressDTO } from "../address/Address";
+
 export interface Church {
   id: string;
   name: string;
@@ -9,15 +11,5 @@ export interface Church {
   foundationDate: string; // Vem como string, podemos formatar depois
   pastorLocalId: number | null;
   pastorLocalName: string | null;
-  address: {
-    id: number;
-    street: string;
-    number: string;
-    complement: string | null;
-    neighborhood: string;
-    city: string;
-    state: string;
-    country: string;
-    zipCode: string;
-  };
+  address: AddressDTO
 }

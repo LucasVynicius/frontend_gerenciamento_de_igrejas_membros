@@ -1,24 +1,32 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../context/useAuth'; // Assumindo que o hook foi movido
-import { getAllUsers, createUser, activateUser, resetUserPassword, deleteUser } from '../../services/user/userService';
-import type { UserInfo, UserRequestDTO } from '../../services/user/userService';
+import { useAuth } from '../../context/useAuth';
+import { getAllUsers } from '../../services/user/userService';
+import type { UserInfo, UserRequestDTO, UserUpdateRequestDTO} from '../../services/user/userService';
 import Modal from '../../components/Modal';
 import UserForm from '../../components/user/UserForm';
-import { FaUserPlus, FaToggleOn, FaToggleOff, FaTrashAlt, FaKey } from 'react-icons/fa';
+import { FaUserPlus, FaToggleOn, FaToggleOff, FaTrashAlt, FaKey, FaEdit } from 'react-icons/fa';
 import { Role } from '../../enums/Role';
+import { useUserMutations } from '../../hooks/useUserMutations';
 
 const AdminUserPage: React.FC = () => {
     const [users, setUsers] = useState<UserInfo[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalType, setModalType] = useState<'create' | 'delete' | 'resetPassword' | 'info' | null>(null);
+    const [modalType, setModalType] = useState<'create' | 'delete' | 'resetPassword' | 'info' | 'edit' | null>(null);
     const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
     const [modalContent, setModalContent] = useState({ title: '', message: '' });
     const [newPassword, setNewPassword] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const { user: loggedInUser } = useAuth();
+    
+    const {
+        isSubmitting,
+        handleCreateUser,
+        handleUpdateUser,
+        handleDeleteUser,
+        handleToggleUserActivation,
+        handleResetUserPassword,
+    } = useUserMutations();
 
-    // 1. Envolvemos as funções em useCallback para otimização
     const closeModal = useCallback(() => {
         setIsModalOpen(false);
         setSelectedUser(null);
@@ -49,87 +57,87 @@ const AdminUserPage: React.FC = () => {
         fetchUsers();
     }, [fetchUsers]);
 
-    // --- Handlers para abrir modais ---
+
     const handleCreate = useCallback(() => { setModalType('create'); setIsModalOpen(true); }, []);
+    const handleEdit = useCallback((user: UserInfo) => { setSelectedUser(user); setModalType('edit'); setIsModalOpen(true); }, []);
     const handleDelete = useCallback((user: UserInfo) => { setSelectedUser(user); setModalType('delete'); setIsModalOpen(true); }, []);
     const handleResetPassword = useCallback((user: UserInfo) => { setSelectedUser(user); setModalType('resetPassword'); setIsModalOpen(true); }, []);
 
-    // --- Handlers de Ações ---
-    const handleToggleActivation = useCallback(async (user: UserInfo) => {
-        try {
-            await activateUser(user.id, !user.enabled);
-            handleShowInfoModal('Sucesso!', `Status do usuário ${user.username} foi atualizado.`);
-            fetchUsers();
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Falha ao atualizar o status do usuário.';
-            handleShowInfoModal('Erro', message);
+  
+    const handleFormSubmit = useCallback(async (data: UserRequestDTO | UserUpdateRequestDTO) => {
+        let result;
+        // A chave para a refatoração está aqui: verificamos a existência do ID
+        if ('id' in data && typeof data.id === 'number' && data.id > 0) {
+            // Se tem um ID válido, é uma atualização
+            result = await handleUpdateUser(data as UserUpdateRequestDTO);
+        } else {
+            // Caso contrário, é uma criação
+            result = await handleCreateUser(data as UserRequestDTO);
         }
-    }, [fetchUsers, handleShowInfoModal]);
 
-    const handleCreateSubmit = useCallback(async (data: UserRequestDTO) => {
-        setIsSubmitting(true);
-        try {
-            await createUser(data);
-            handleShowInfoModal('Sucesso!', `Usuário "${data.username}" criado. Agora precisa ser ativado.`);
+        if (result.success) {
+            handleShowInfoModal('Sucesso!', result.message);
             closeModal();
             fetchUsers();
-        } catch (error) {
-            handleShowInfoModal('Erro', (error as Error).message);
-        } finally {
-            setIsSubmitting(false);
+        } else {
+            handleShowInfoModal('Erro', result.message);
         }
-    }, [closeModal, fetchUsers, handleShowInfoModal]);
+    }, [handleCreateUser, handleUpdateUser, closeModal, fetchUsers, handleShowInfoModal]);
+
+    const onToggleActivation = useCallback(async (user: UserInfo) => {
+        const result = await handleToggleUserActivation(user.id, !user.enabled);
+        if (result.success) {
+            handleShowInfoModal('Sucesso!', result.message);
+            fetchUsers();
+        } else {
+            handleShowInfoModal('Erro', result.message);
+        }
+    }, [handleToggleUserActivation, handleShowInfoModal, fetchUsers]);
+
 
     const onDeleteConfirm = useCallback(async () => {
         if (!selectedUser) return;
-        setIsSubmitting(true);
-        try {
-            await deleteUser(selectedUser.id); 
-            handleShowInfoModal('Sucesso!', 'Usuário excluído.');
+        const result = await handleDeleteUser(selectedUser.id);
+        if (result.success) {
+            handleShowInfoModal('Sucesso!', result.message);
             closeModal();
             fetchUsers();
-        } catch (error) {
-            handleShowInfoModal('Erro', (error as Error).message);
-        } finally {
-            setIsSubmitting(false);
+        } else {
+            handleShowInfoModal('Erro', result.message);
         }
-    }, [selectedUser, closeModal, fetchUsers, handleShowInfoModal]);
+    }, [selectedUser, handleDeleteUser, closeModal, fetchUsers, handleShowInfoModal]);
 
-    const handleResetPasswordConfirm = useCallback(async () => {
+    const onResetPasswordConfirm = useCallback(async () => {
         if (!selectedUser || !newPassword) {
             handleShowInfoModal('Atenção', 'Por favor, digite uma nova senha.');
             return;
         }
-        setIsSubmitting(true);
-        try {
-            await resetUserPassword(selectedUser.id, newPassword);
-            handleShowInfoModal('Sucesso!', `Senha do usuário ${selectedUser.username} foi resetada.`);
+        const result = await handleResetUserPassword(selectedUser.id, newPassword);
+        if (result.success) {
+            handleShowInfoModal('Sucesso!', result.message);
             closeModal();
-        } catch (error) {
-            handleShowInfoModal('Erro', (error as Error).message);
-        } finally {
-            setIsSubmitting(false);
+        } else {
+            handleShowInfoModal('Erro', result.message);
         }
-    }, [selectedUser, newPassword, closeModal, handleShowInfoModal]);
-
+    }, [selectedUser, newPassword, handleResetUserPassword, closeModal, handleShowInfoModal]);
+    
     if (loading) return <div className="loading-message">Carregando usuários...</div>;
 
-    // O JSX continua o mesmo, pois a lógica de renderização já estava correta.
     return (
         <div className="page-container">
             <div className="page-header-container">
                  <div className="page-title-group">
-                    <h1>Gerenciamento de Usuários</h1>
-                    <p>Crie, ative e gerencie os usuários do sistema.</p>
-                </div>
-                <div className="page-actions">
-                    <button className="btn-add" onClick={handleCreate}>
-                        <FaUserPlus /> Adicionar Usuário
-                    </button>
-                </div>
+                     <h1>Gerenciamento de Usuários</h1>
+                     <p>Crie, ative e gerencie os usuários do sistema.</p>
+                 </div>
+                 <div className="page-actions">
+                     <button className="btn-add" onClick={handleCreate}>
+                         <FaUserPlus /> Adicionar Usuário
+                     </button>
+                 </div>
             </div>
 
-             <div className="table-container">
+            <div className="table-container">
                 <table>
                     <thead>
                         <tr>
@@ -148,9 +156,10 @@ const AdminUserPage: React.FC = () => {
                                 <td>{user.role === Role.ADMIN ? 'Administrador' : 'Secretaria'}</td>
                                 <td>{user.enabled ? 'Ativo' : 'Inativo'}</td>
                                 <td className="actions-cell">
-                                    <button onClick={() => handleToggleActivation(user)} className={`btn btn-sm me-2 ${user.enabled ? 'btn-secondary' : 'btn-success'}`} title={user.enabled ? 'Desativar' : 'Ativar'}>
+                                    <button onClick={() => onToggleActivation(user)} className={`btn btn-sm me-2 ${user.enabled ? 'btn-secondary' : 'btn-success'}`} title={user.enabled ? 'Desativar' : 'Ativar'}>
                                         {user.enabled ? <FaToggleOff /> : <FaToggleOn />}
                                     </button>
+                                    <button onClick={() => handleEdit(user)} className="btn btn-sm btn-primary me-2" title="Editar"><FaEdit /></button>
                                     <button onClick={() => handleResetPassword(user)} className="btn btn-sm btn-warning me-2" title="Resetar Senha"><FaKey /></button>
                                     {loggedInUser?.id !== user.id && (
                                         <button onClick={() => handleDelete(user)} className="btn btn-sm btn-danger" title="Excluir"><FaTrashAlt /></button>
@@ -163,8 +172,14 @@ const AdminUserPage: React.FC = () => {
             </div>
 
             <Modal isOpen={isModalOpen && modalType === 'create'} onClose={closeModal} title="Adicionar Novo Usuário">
-                <UserForm onSubmit={handleCreateSubmit} onCancel={closeModal} isSubmitting={isSubmitting} />
+                <UserForm onSubmit={handleFormSubmit} onCancel={closeModal} isSubmitting={isSubmitting} />
             </Modal>
+
+            {selectedUser && (
+                <Modal isOpen={isModalOpen && modalType === 'edit'} onClose={closeModal} title={`Editar Usuário: ${selectedUser.username}`}>
+                    <UserForm onSubmit={handleFormSubmit} onCancel={closeModal} isSubmitting={isSubmitting} initialData={selectedUser} />
+                </Modal>
+            )}
 
             {selectedUser && (
                 <Modal isOpen={isModalOpen && modalType === 'resetPassword'} onClose={closeModal} title={`Resetar Senha para ${selectedUser.username}`}>
@@ -174,7 +189,7 @@ const AdminUserPage: React.FC = () => {
                     </div>
                     <div className="modal-footer">
                         <button className="btn btn-secondary" onClick={closeModal} disabled={isSubmitting}>Cancelar</button>
-                        <button className="btn btn-primary" onClick={handleResetPasswordConfirm} disabled={isSubmitting}>{isSubmitting ? 'Salvando...' : 'Salvar Nova Senha'}</button>
+                        <button className="btn btn-primary" onClick={onResetPasswordConfirm} disabled={isSubmitting}>{isSubmitting ? 'Salvando...' : 'Salvar Nova Senha'}</button>
                     </div>
                 </Modal>
             )}

@@ -7,15 +7,15 @@ const AdminRoute: React.FC = () => {
     const { user, isAuthenticated, loading } = useAuth();
 
     if (loading) {
-        return <div>Carregando...</div>; // Ou um spinner
+        return <div>Carregando...</div>; 
     }
 
-    // Verifica se está autenticado E se o perfil é de ADMIN
+    
     if (isAuthenticated && user?.role === Role.ADMIN) {
-        return <Outlet />; // Se for admin, permite o acesso à rota filha
+        return <Outlet />;
     }
 
-    // Se não for admin (ou não estiver logado), redireciona para o dashboard
+    
     return <Navigate to="/" />;
 };
 

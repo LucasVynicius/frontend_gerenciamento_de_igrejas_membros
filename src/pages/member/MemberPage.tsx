@@ -3,37 +3,9 @@ import api from "../../services/api";
 import Modal from "../../components/Modal";
 import useAuth from "../../context/useAuth";
 import MemberForm from "../../components/member-form/MemberForm";
-import type { MemberRequestDTO } from "../../dtos/MemberRequestDTO";
+import type {  Member  } from "../../types/member/Member";
 import { FaEdit, FaTrash, FaEye } from 'react-icons/fa';
 
-interface Member {
-    id: number;
-    fullName: string;
-    cpf: string;
-    rg: string;
-    telephone: string;
-    email: string;
-    dateOfBirth: string;
-    baptismDate: string;
-    entryDate: string;
-    active: boolean;
-    address: {
-        street: string;
-        number: string;
-        complement: string | null;
-        neighborhood: string;
-        city: string;
-        state: string;
-        country: string;
-        nationality: string;
-        zipCode: string;
-    };
-    idChurch: number;
-    churchName: string;
-    churchTradeName: string;
-    churchCity: string;
-    churchCounty: string;
-}
 
 const MemberPage = () => {
     const [members, setMembers] = useState<Member[]>([]);
@@ -103,7 +75,7 @@ const MemberPage = () => {
         setSelectedMember(null);
     };
 
-    const handleCreateSubmit = async (data: MemberRequestDTO) => {
+    const handleCreateSubmit = async (data: Member) => {
         setIsSubmitting(true);
         try {
             await api.post("/membros", data);
@@ -127,7 +99,7 @@ const MemberPage = () => {
         }
     };
 
-    const handleEditSubmit = async (data: MemberRequestDTO) => {
+    const handleEditSubmit = async (data: Member) => {
         if (!selectedMember) return;
         setIsSubmitting(true);
         try {
