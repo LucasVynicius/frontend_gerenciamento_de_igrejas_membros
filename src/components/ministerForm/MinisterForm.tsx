@@ -8,6 +8,7 @@ import { getChurches } from '../../services/church/ChurchService';
 import { MinisterialPosition } from '../../enums/MinisterialPosition';
 import { translatePosition } from '../../utils/translations';
 import type { Minister } from '../../types/minister/Minister';
+import './MinisterForm.css'
 
 interface MinisterFormProps {
   initialData?: Minister | null;

@@ -63,7 +63,6 @@ const MinisterPage: React.FC = () => {
     const handleDelete = useCallback((minister: Minister) => { setSelectedMinister(minister); setModalType('delete'); }, []);
     const handleDetails = useCallback((minister: Minister) => { setSelectedMinister(minister); setModalType('details'); }, []);
 
-    // Handler para gerar a credencial do ministro
     const handleGenerateCredential = useCallback(async (minister: Minister) => {
         try {
             const data = await getMinisterCredential(minister.id);

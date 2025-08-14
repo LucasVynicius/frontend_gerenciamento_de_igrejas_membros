@@ -4,10 +4,10 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #f4f7f6;
+  background-color: #9f9ca0;
 }
 .login-container {
-  background: #fff;
+  background: #fafafa;
   padding: 3rem;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -46,7 +46,7 @@
 .form-group input {
   width: 100%;
   padding: 0.8rem 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid #4d4d4d;
   border-radius: 8px;
   font-size: 1rem;
 }

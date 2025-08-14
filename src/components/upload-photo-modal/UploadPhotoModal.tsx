@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import Modal  from '../Modal'; // Verifique o caminho para o seu componente Modal
+import Modal  from '../Modal';
+import './uploadPhotoModal.css'
 
 interface UploadPhotoModalProps {
   isOpen: boolean;

@@ -12,6 +12,14 @@ const positionTranslations: { [key in MinisterialPosition]: string } = {
     [MinisterialPosition.COOPERATOR]: 'Cooperador',
 };
 
-export const translatePosition = (position: MinisterialPosition): string => {
-    return positionTranslations[position] || position;
+
+export const translatePosition = (position: string | null): string => {
+    if (!position) {
+        return '';
+    }
+    
+    const key = position.toUpperCase() as MinisterialPosition;
+    const translated = positionTranslations[key];
+    
+    return translated || position;
 };

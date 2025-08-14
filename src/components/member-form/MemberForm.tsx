@@ -5,6 +5,7 @@ import { IMaskInput } from 'react-imask';
 import { getChurches } from '../../services/church/ChurchService';
 import type { Church } from '../../types/church/Church';
 import type { Member, MemberRequestDTO, MemberUpdateRequestDTO } from '../../types/member/Member';
+import './MemberForm.css'
 
 interface MemberFormProps {
     initialData?: Partial<Member> | null;

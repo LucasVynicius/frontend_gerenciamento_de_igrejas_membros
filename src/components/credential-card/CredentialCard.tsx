@@ -1,6 +1,7 @@
 import React from 'react';
 import type { CredentialData } from '../../types/credential/Credential';
 import { formatCpf } from '../../utils/formatCpf';
+import { translatePosition }from '../../utils/translations'
 import './CredentialCard.css';
 
 interface CredentialCardProps {
@@ -28,7 +29,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({ data }) => {
                 </div>
                 <div className="member-info">
                     <h2 className="member-name">{data.fullName}</h2>
-                    <p className="member-position">{data.position ? data.position : "MEMBRO"}</p>
+                    <p className="member-position">{data.position ? translatePosition(data.position) : "MEMBRO"}</p>
                     
                     <div className="member-details">
                         <p>CPF: <span>{formatCpf(data.cpf)}</span></p>

@@ -76,7 +76,7 @@ const MemberPage: React.FC = () => {
 
     const handleGenerateCredential = useCallback(async (member: Member) => {
         console.log('Dados do membro na hora de gerar a credencial:', member);
-        // A verificação agora usa o `photoUrl` do membro passado como parâmetro
+        
         if (!member.photoUrl) {
             handleShowInfoModal('Atenção', 'Este membro ainda não possui uma foto. Por favor, faça o upload da foto primeiro.');
             return;
@@ -85,7 +85,7 @@ const MemberPage: React.FC = () => {
             // Usa o ID do membro para gerar a credencial
             const data = await getMemberCredential(member.id);
             setCredentialData(data);
-            setSelectedMember(member); // Garante que o selectedMember está correto para o modal
+            setSelectedMember(member); 
             setModalType('credential');
         } catch (error) {
             handleShowInfoModal('Erro', (error as Error).message);
@@ -132,20 +132,16 @@ const MemberPage: React.FC = () => {
         if (!selectedMember) return;
         setIsSubmitting(true);
         try {
-            // 1. Faz o upload da foto.
+    
             await uploadMemberPhoto(selectedMember.id, file);
 
-            // 2. Busca o membro atualizado do back-end.
             const updatedMember = await getMemberById(selectedMember.id);
             console.log('Dados do membro APÓS a atualização:', updatedMember);
-            // 3. Atualiza o estado selectedMember com o novo objeto.
             setSelectedMember(updatedMember);
 
-            // 4. Exibe a mensagem de sucesso e fecha o modal.
             handleShowInfoModal('Sucesso!', 'Foto enviada com sucesso. Agora você já pode gerar a credencial.');
             closeModal();
 
-            // 5. Opcional: Atualiza a lista principal de membros para refletir a mudança.
             fetchPageData();
 
         } catch (error) {

@@ -1,43 +1,126 @@
+/* ===== RESET BÁSICO ===== */
+.church-form * {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.church-form {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  max-width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== TÍTULOS ===== */
 .church-form h5 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid #8A2BE2;
-    padding-bottom: 5px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #222;
 }
 
+/* ===== LABELS ===== */
 .church-form .form-label {
-    font-weight: 500;
-    color: #555;
-    margin-bottom: 0.5rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #555;
+  display: block;
 }
 
+/* ===== INPUTS, SELECTS E TEXTAREAS ===== */
 .church-form .form-control,
 .church-form .form-select {
-    border-radius: 6px;
-    border: 1px solid #ced4da;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    transition: all 0.3s ease-in-out;
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  color: #333;
+  border: 1px solid #b0c4de; /* Borda azul clara */
+  border-radius: 8px;
+  background-color: #fff;
+  transition: all 0.2s ease-in-out;
 }
 
 .church-form .form-control:focus,
 .church-form .form-select:focus {
-    border-color: #c499f5;
-    box-shadow: 0 0 0 0.25rem rgba(138, 43, 226, 0.25); 
-    outline: none;
+  border-color: #0077ff;
+  box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.15);
+  outline: none;
 }
 
-@media (max-width: 576px) {
-    .church-form h5 {
-        font-size: 1.1rem;
-    }
-    .modal-footer {
-        flex-direction: column;
-        gap: 0.5rem; 
-    }
-    .modal-footer button {
-        width: 100%;
-    }
+/* ===== CAMPOS COM ERRO ===== */
+.church-form .is-invalid {
+  border-color: #dc3545 !important;
+}
+
+.church-form .invalid-feedback {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* ===== CHECKBOX ===== */
+.church-form .form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.church-form .form-check-input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* ===== BARRA DIVISÓRIA ===== */
+.church-form hr {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 20px 0;
+}
+
+/* ===== BOTÕES ===== */
+.church-form .btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Botão Salvar */
+.church-form .btn-primary {
+  background-color: #0077ff;
+  border: none;
+  color: #fff;
+}
+
+.church-form .btn-primary:hover {
+  background-color: #005fd1;
+}
+
+/* Botão Cancelar */
+.church-form .btn-secondary {
+  background-color: #dc3545;
+  border: none;
+  color: #fff;
+}
+
+.church-form .btn-secondary:hover {
+  background-color: #b52a37;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
+  .church-form {
+    padding: 20px 15px;
+  }
+  .church-form .modal-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .church-form .btn {
+    width: 100%;
+  }
 }

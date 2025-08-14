@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import type { UserRequestDTO, UserUpdateRequestDTO, UserInfo, UserFormValues } from '../../services/user/userService';
 import { Role } from '../../enums/Role';
+import './UserForm.css'
 
 interface UserFormProps {
     onSubmit: (data: UserRequestDTO | UserUpdateRequestDTO) => void;
