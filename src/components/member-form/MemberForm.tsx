@@ -4,13 +4,14 @@ import type { SubmitHandler } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
 import { getChurches } from '../../services/church/ChurchService';
 import type { Church } from '../../types/church/Church';
-import type { Member } from '../../types/member/Member';
+import type { Member, MemberRequestDTO, MemberUpdateRequestDTO } from '../../types/member/Member';
 
 interface MemberFormProps {
-    initialData?: Partial<Member>;
-    onSubmit: (data: Member) => void;
+    initialData?: Partial<Member> | null;
+    onSubmit: (data: MemberRequestDTO | MemberUpdateRequestDTO) => void;
     onCancel: () => void;
     isSubmitting: boolean;
+    churches: Church[];
 }
 
 const MemberForm: React.FC<MemberFormProps> = ({ initialData, onSubmit, onCancel, isSubmitting }) => {
@@ -35,8 +36,8 @@ const MemberForm: React.FC<MemberFormProps> = ({ initialData, onSubmit, onCancel
         const finalData = {
             ...data,
             idChurch: Number(data.idChurch),
-            baptismDate: data.baptismDate || null,
-            entryDate: data.entryDate || null,
+            dateOfBaptism: data.baptismDate|| null,
+            dateOfEntry: data.entryDate || null,
         };
         onSubmit(finalData);
     };

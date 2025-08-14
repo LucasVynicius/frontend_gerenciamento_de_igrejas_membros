@@ -1,53 +1,48 @@
-import { api } from '../api'; // Importa nossa instância do Axios
-import type { Member } from '../../types/member/Member';
-import type { AddressDTO } from '../../types/address/Address';
+import { api } from "../api";
+import type {
+  Member,
+  MemberRequestDTO,
+  MemberUpdateRequestDTO,
+} from "../../types/member/Member";
 
-// DTO para CRIAR ou ATUALIZAR um membro. Corresponde ao MemberRequestDTO do backend.
-export interface MemberRequestDTO {
-  fullName: string;
-  cpf: string;
-  rg: string;
-  telephone: string;
-  email: string;
-  dateOfBirth: string;
-  baptismDate: string | null;
-  entryDate: string | null;
-  active: boolean;
-  address: AddressDTO;
-  idChurch: number | null;
-}
-
-/**
- * Busca a lista de todos os membros.
- */
 export const getMembers = async (): Promise<Member[]> => {
-  const response = await api.get('/membros');
+  const response = await api.get("/members");
   return response.data;
 };
 
-/**
- * Cria um novo membro.
- * @param memberData Os dados do formulário para o novo membro.
- */
-export const createMember = async (memberData: MemberRequestDTO): Promise<Member> => {
-  const response = await api.post('/membros', memberData);
+export const createMember = async (
+  memberData: MemberRequestDTO
+): Promise<Member> => {
+  const response = await api.post("/members", memberData);
   return response.data;
 };
 
-/**
- * Atualiza um membro existente.
- * @param id O ID do membro a ser atualizado.
- * @param memberData Os novos dados do membro.
- */
-export const updateMember = async (id: number, memberData: MemberRequestDTO): Promise<Member> => {
-  const response = await api.put(`/membros/${id}`, memberData);
+export const updateMember = async (
+  id: number,
+  memberData: MemberUpdateRequestDTO
+): Promise<Member> => {
+  const response = await api.put(`/members/${id}`, memberData);
   return response.data;
 };
 
-/**
- * Exclui um membro.
- * @param id O ID do membro a ser excluído.
- */
 export const deleteMember = async (id: number): Promise<void> => {
-  await api.delete(`/membros/${id}`);
+  await api.delete(`/members/${id}`);
+};
+
+export const uploadMemberPhoto = async (
+  memberId: number,
+  file: File
+): Promise<void> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  await api.post(`/members/${memberId}/photo`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const getMemberById = async (memberId: number): Promise<Member> => {
+  const response = await api.get<Member>(`/members/${memberId}`);
+  return response.data;
 };

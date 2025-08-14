@@ -1,25 +1,35 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { getMinisters, consecrateMinister, deleteMinister, updateMinister } from '../../services/minister/ministerService';
 import Modal from '../../components/Modal';
 import MinisterForm from '../../components/ministerForm/MinisterForm';
-import { FaUserGraduate, FaTrashAlt, FaEdit, FaEye } from 'react-icons/fa';
+import CredentialCard from '../../components/credential-card/CredentialCard';
+
+import { FaUserGraduate, FaTrashAlt, FaEdit, FaEye, FaIdCard} from 'react-icons/fa';
 import { Role } from '../../enums/Role';
 import useAuth from '../../context/useAuth';
 import { translatePosition } from '../../utils/translations';
 import type { MinisterRequestDTO } from '../../services/minister/ministerService';
 import type { Minister } from '../../types/minister/Minister';
+import type { CredentialData } from '../../types/credential/Credential';
+import { getMinisterCredential } from '../../services/credential/CredentialService';
+import { useReactToPrint } from 'react-to-print';
 
 const MinisterPage: React.FC = () => {
     const [ministers, setMinisters] = useState<Minister[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'details' | 'info' | null>(null);
+    const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'details' | 'credential' | 'info' | null>(null);
     const [selectedMinister, setSelectedMinister] = useState<Minister | null>(null);
+    const [credentialData, setCredentialData] = useState<CredentialData | null>(null);
     const [modalContent, setModalContent] = useState({ title: '', message: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { user } = useAuth();
-    
-    // Verificação de permissão centralizada
+
     const canManage = user?.role === Role.ADMIN || user?.role === Role.SECRETARY;
+    const credentialRef = useRef(null);
+    const handlePrint = useReactToPrint({
+        documentTitle: 'Credencial do Ministro',
+        contentRef: credentialRef
+    });
 
     const handleShowInfoModal = useCallback((title: string, message: string) => {
         setModalType('info');
@@ -31,7 +41,7 @@ const MinisterPage: React.FC = () => {
         try {
             const data = await getMinisters();
             setMinisters(data);
-        } catch  {
+        } catch {
             handleShowInfoModal('Erro', 'Falha ao carregar a lista de ministros.');
         } finally {
             setLoading(false);
@@ -45,12 +55,25 @@ const MinisterPage: React.FC = () => {
     const closeModal = useCallback(() => {
         setModalType(null);
         setSelectedMinister(null);
+        setCredentialData(null);
     }, []);
 
     const handleConsecrate = useCallback(() => { setModalType('create'); }, []);
     const handleEdit = useCallback((minister: Minister) => { setSelectedMinister(minister); setModalType('edit'); }, []);
     const handleDelete = useCallback((minister: Minister) => { setSelectedMinister(minister); setModalType('delete'); }, []);
     const handleDetails = useCallback((minister: Minister) => { setSelectedMinister(minister); setModalType('details'); }, []);
+
+    // Handler para gerar a credencial do ministro
+    const handleGenerateCredential = useCallback(async (minister: Minister) => {
+        try {
+            const data = await getMinisterCredential(minister.id);
+            setCredentialData(data);
+            setSelectedMinister(minister);
+            setModalType('credential');
+        } catch (error) {
+            handleShowInfoModal('Erro', (error as Error).message);
+        }
+    }, [handleShowInfoModal]);
 
     const handleFormSubmit = useCallback(async (data: MinisterRequestDTO) => {
         setIsSubmitting(true);
@@ -79,7 +102,7 @@ const MinisterPage: React.FC = () => {
             handleShowInfoModal('Sucesso!', 'Registro ministerial removido com sucesso.');
             closeModal();
             fetchMinisters();
-        } catch {
+        } catch  {
             handleShowInfoModal('Erro', 'Falha ao remover o registro ministerial.');
         } finally {
             setIsSubmitting(false);
@@ -126,7 +149,8 @@ const MinisterPage: React.FC = () => {
                                     <td className="actions-cell">
                                         <button onClick={() => handleDetails(minister)} className="btn btn-sm btn-info me-2" title="Ver Detalhes"><FaEye /></button>
                                         <button onClick={() => handleEdit(minister)} className="btn btn-sm btn-warning me-2" title="Editar"><FaEdit /></button>
-                                        <button onClick={() => handleDelete(minister)} className="btn btn-sm btn-danger" title="Remover Cargo"><FaTrashAlt /></button>
+                                        <button onClick={() => handleDelete(minister)} className="btn btn-sm btn-danger me-2" title="Remover Cargo"><FaTrashAlt /></button>
+                                        <button onClick={() => handleGenerateCredential(minister)} className="btn btn-sm btn-primary" title="Gerar Credencial"><FaIdCard /></button>
                                     </td>
                                 )}
                             </tr>
@@ -139,11 +163,11 @@ const MinisterPage: React.FC = () => {
                 </table>
             </div>
 
-            <Modal 
-                isOpen={modalType === 'create' || modalType === 'edit'} 
-                onClose={closeModal} 
-                title={modalType === 'create' 
-                    ? 'Consagrar Novo Ministro' 
+            <Modal
+                isOpen={modalType === 'create' || modalType === 'edit'}
+                onClose={closeModal}
+                title={modalType === 'create'
+                    ? 'Consagrar Novo Ministro'
                     : `Editar Registro de: ${selectedMinister?.fullName}`
                 }
             >
@@ -174,6 +198,18 @@ const MinisterPage: React.FC = () => {
                         <button className="btn btn-danger" onClick={onDeleteConfirm} disabled={isSubmitting}>
                             {isSubmitting ? 'Removendo...' : 'Sim, Remover'}
                         </button>
+                    </div>
+                </Modal>
+            )}
+
+            {selectedMinister && credentialData && (
+                <Modal isOpen={modalType === 'credential'} onClose={closeModal} title="Credencial do Ministro">
+                    <div ref={credentialRef}>
+                        <CredentialCard data={credentialData} />
+                    </div>
+                    <div className="modal-footer">
+                        <button className="btn btn-secondary" onClick={closeModal}>Fechar</button>
+                        <button className="btn btn-success" onClick={handlePrint}>Baixar PDF</button>
                     </div>
                 </Modal>
             )}

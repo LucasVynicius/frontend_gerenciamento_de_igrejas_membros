@@ -25,7 +25,7 @@ const handleApiError = (error: unknown, defaultMessage: string): Error => {
 
 export const getMinisters = async (): Promise<Minister[]> => {
   try {
-    const response = await api.get<Minister[]>('/ministros');
+    const response = await api.get<Minister[]>('/ministers');
     return response.data;
   } catch (error) {
     throw handleApiError(error, 'Falha ao buscar a lista de ministros.');
@@ -34,7 +34,7 @@ export const getMinisters = async (): Promise<Minister[]> => {
 
 export const consecrateMinister = async (data: MinisterRequestDTO): Promise<Minister> => {
   try {
-    const response = await api.post<Minister>('/ministros', data);
+    const response = await api.post<Minister>('/ministers', data);
     return response.data;
   } catch (error) {
     throw handleApiError(error, 'Falha ao consagrar o novo ministro.');
@@ -43,7 +43,7 @@ export const consecrateMinister = async (data: MinisterRequestDTO): Promise<Mini
 
 export const updateMinister = async (id: number, data: MinisterRequestDTO): Promise<Minister> => {
   try {
-    const response = await api.put<Minister>(`/ministros/${id}`, data);
+    const response = await api.put<Minister>(`/ministers/${id}`, data);
     return response.data;
   } catch (error) {
     throw handleApiError(error, 'Falha ao atualizar o registro ministerial.');
