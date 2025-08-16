@@ -24,6 +24,7 @@ const MemberPage: React.FC = () => {
   const [credentialData, setCredentialData] = useState<CredentialData | null>(null);
   const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'details' | 'upload' | 'credential' | 'document' | 'info' | null>(null);
   const [modalContent, setModalContent] = useState({ title: '', message: '' });
+  const [selectedDocumentType, setSelectedDocumentType] = useState<string>('');
   const [documentPurpose, setDocumentPurpose] = useState('');
 
   const { user } = useAuth();
@@ -144,26 +145,26 @@ const MemberPage: React.FC = () => {
     if (!selectedMember) return;
     setIsSubmitting(true);
     try {
-      // Chama a API e recebe o PDF como um Blob
       const response = await generateRecommendationLetter(selectedMember.id, documentPurpose);
 
-      // Cria uma URL temporária para o Blob
-      const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `carta_recomendacao_${selectedMember.id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(downloadUrl);
 
-      // Abre uma nova aba com a URL do arquivo
-      window.open(fileURL, '_blank');
-
-      // Limpa a URL temporária
-      URL.revokeObjectURL(fileURL);
-
-      handleShowInfoModal('Sucesso!', 'Documento gerado com sucesso!');
+      handleShowInfoModal('Sucesso!', 'Documento gerado e baixado com sucesso!');
       closeModal();
     } catch (error) {
       handleShowInfoModal('Erro', (error as Error).message);
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedMember, closeModal, handleShowInfoModal, documentPurpose, setIsSubmitting]);
+  }, [selectedMember, closeModal, handleShowInfoModal, setIsSubmitting]);
 
   if (loading) return <div className="loading-message">Carregando membros...</div>;
 
@@ -270,27 +271,32 @@ const MemberPage: React.FC = () => {
         </Modal>
       )}
 
-      {selectedMember && modalType === 'document' && (
+      {selectedMember && (
         <Modal isOpen={modalType === 'document'} onClose={closeModal} title="Gerar Documento">
           <div className="form-group mb-3">
-            <label htmlFor="documentPurpose" className="form-label">Propósito da Carta</label>
-            <textarea
-              id="documentPurpose"
-              className="form-control"
-              rows={3}
-              value={documentPurpose}
-              onChange={(e) => setDocumentPurpose(e.target.value)}
-              placeholder="Descreva o propósito da carta..."
-            ></textarea>
+            <label htmlFor="documentType" className="form-label">Tipo de Documento</label>
+            <select
+              id="documentType"
+              className="form-select"
+              value={selectedDocumentType}
+              onChange={(e) => setSelectedDocumentType(e.target.value)}
+            >
+              <option value="">Selecione...</option>
+              {/* Aqui a gente usaria o ENUM de documentos para gerar as opções */}
+              <option value="DECLARACAO_MEMBRESIA">Declaração de Membresia</option>
+              <option value="CARTA_RECOMENDACAO">Carta de Recomendação</option>
+            </select>
           </div>
+
           <div className="modal-footer">
             <button className="btn btn-secondary" onClick={closeModal} disabled={isSubmitting}>Cancelar</button>
-            <button className="btn btn-primary" onClick={() => handleDocumentSubmit()} disabled={isSubmitting}>
+            <button className="btn btn-primary" onClick={handleDocumentSubmit} disabled={isSubmitting || !selectedDocumentType}>
               {isSubmitting ? 'Gerando...' : 'Gerar Documento'}
             </button>
           </div>
         </Modal>
       )}
+
 
       <Modal isOpen={modalType === 'info'} onClose={closeModal} title={modalContent.title}>
         <p>{modalContent.message}</p>
