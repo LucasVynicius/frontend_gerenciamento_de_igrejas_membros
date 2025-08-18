@@ -1,6 +1,6 @@
 
 .sidebar {
-  width: 250px;
+  width: 220px;
   background-color: #4a148c; /* Cor de fundo roxa/lilás */
   color: #fff;
   display: flex;
@@ -12,11 +12,12 @@
 
 .sidebar-header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 .sidebar-logo {
-    max-width: 40%;
+    max-width: 60%;
+    max-height: 100%;
 }
 
 .sidebar-nav ul {
