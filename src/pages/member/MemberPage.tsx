@@ -7,7 +7,8 @@ import CredentialCard from '../../components/credential-card/CredentialCard';
 import { getMembers, createMember, updateMember, deleteMember, uploadMemberPhoto, getMemberById } from '../../services/member/memberService';
 import { getChurches } from '../../services/church/ChurchService';
 import { getMemberCredential } from '../../services/credential/CredentialService';
-import { generateRecommendationLetter } from '../../services/document/DocumentService';
+import { generateDocument } from '../../services/document/DocumentService';
+import type { DocumentRequestDTO, DocumentType } from '../../types/document/Document';
 import type { Member, MemberRequestDTO, MemberUpdateRequestDTO } from '../../types/member/Member';
 import type { Church } from '../../types/church/Church';
 import type { CredentialData } from '../../types/credential/Credential';
@@ -24,7 +25,7 @@ const MemberPage: React.FC = () => {
   const [credentialData, setCredentialData] = useState<CredentialData | null>(null);
   const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'details' | 'upload' | 'credential' | 'document' | 'info' | null>(null);
   const [modalContent, setModalContent] = useState({ title: '', message: '' });
-  const [selectedDocumentType, setSelectedDocumentType] = useState<string>('');
+  const [selectedDocumentType, setSelectedDocumentType] = useState<DocumentType | ''>('');
   const [documentPurpose, setDocumentPurpose] = useState('');
 
   const { user } = useAuth();
@@ -141,30 +142,43 @@ const MemberPage: React.FC = () => {
     }
   }, [selectedMember, closeModal, fetchPageData, handleShowInfoModal, setIsSubmitting, getMemberById, uploadMemberPhoto, setSelectedMember]);
 
-  const handleDocumentSubmit = useCallback(async () => {
-    if (!selectedMember) return;
-    setIsSubmitting(true);
-    try {
-      const response = await generateRecommendationLetter(selectedMember.id, documentPurpose);
-
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.download = `carta_recomendacao_${selectedMember.id}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(downloadUrl);
-
-      handleShowInfoModal('Sucesso!', 'Documento gerado e baixado com sucesso!');
-      closeModal();
-    } catch (error) {
-      handleShowInfoModal('Erro', (error as Error).message);
-    } finally {
-      setIsSubmitting(false);
+const handleDocumentSubmit = useCallback(async () => {
+    // A verificação abaixo resolve o Erro 2
+    // Ela garante para o TypeScript que 'selectedMember' e 'selectedDocumentType' não são nulos/vazios
+    if (!selectedMember || !selectedDocumentType) {
+        return; 
     }
-  }, [selectedMember, closeModal, handleShowInfoModal, setIsSubmitting]);
+
+    setIsSubmitting(true);
+    
+    // Com a importação do Passo 1, este erro some
+    const requestDTO: DocumentRequestDTO = {
+        documentType: selectedDocumentType, // Agora o TS sabe que não é uma string vazia
+        idMember: selectedMember.id,
+        purpose: documentPurpose,
+    };
+
+    try {
+        const response = await generateDocument(requestDTO);
+
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = `${requestDTO.documentType.toLowerCase()}_${selectedMember.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(downloadUrl);
+
+        handleShowInfoModal('Sucesso!', 'Documento gerado e baixado com sucesso!');
+        closeModal();
+    } catch (error) {
+        handleShowInfoModal('Erro', (error as Error).message);
+    } finally {
+        setIsSubmitting(false);
+    }
+}, [selectedMember, selectedDocumentType, documentPurpose, closeModal, handleShowInfoModal]);
 
   if (loading) return <div className="loading-message">Carregando membros...</div>;
 
@@ -271,31 +285,49 @@ const MemberPage: React.FC = () => {
         </Modal>
       )}
 
-      {selectedMember && (
-        <Modal isOpen={modalType === 'document'} onClose={closeModal} title="Gerar Documento">
-          <div className="form-group mb-3">
+{selectedMember && (
+    <Modal isOpen={modalType === 'document'} onClose={closeModal} title={`Gerar Documento para ${selectedMember.fullName}`}>
+        {/* GRUPO DO TIPO DE DOCUMENTO */}
+        <div className="form-group mb-3">
             <label htmlFor="documentType" className="form-label">Tipo de Documento</label>
             <select
-              id="documentType"
-              className="form-select"
-              value={selectedDocumentType}
-              onChange={(e) => setSelectedDocumentType(e.target.value)}
+                id="documentType"
+                className="form-select"
+                value={selectedDocumentType}
+                onChange={(e) => setSelectedDocumentType(e.target.value as DocumentType)}
             >
-              <option value="">Selecione...</option>
-              {/* Aqui a gente usaria o ENUM de documentos para gerar as opções */}
-              <option value="DECLARACAO_MEMBRESIA">Declaração de Membresia</option>
-              <option value="CARTA_RECOMENDACAO">Carta de Recomendação</option>
+                <option value="">Selecione...</option>
+                {/* Usando os valores EXATOS do nosso enum do back-end */}
+                <option value="RECOMMENDATION_LETTER_MEMBER">Carta de Recomendação</option>
+                {/* Futuramente, você pode adicionar outros tipos aqui */}
             </select>
-          </div>
+        </div>
 
-          <div className="modal-footer">
+        {/* GRUPO DA FINALIDADE (Purpose) */}
+        <div className="form-group mb-3">
+            <label htmlFor="documentPurpose" className="form-label">Finalidade (Opcional)</label>
+            <textarea
+                id="documentPurpose"
+                className="form-control"
+                rows={3}
+                value={documentPurpose}
+                onChange={(e) => setDocumentPurpose(e.target.value)}
+                placeholder="Ex: Para apresentação na empresa X."
+            ></textarea>
+        </div>
+
+        <div className="modal-footer">
             <button className="btn btn-secondary" onClick={closeModal} disabled={isSubmitting}>Cancelar</button>
-            <button className="btn btn-primary" onClick={handleDocumentSubmit} disabled={isSubmitting || !selectedDocumentType}>
-              {isSubmitting ? 'Gerando...' : 'Gerar Documento'}
+            <button 
+                className="btn btn-primary" 
+                onClick={handleDocumentSubmit} 
+                disabled={isSubmitting || !selectedDocumentType}
+            >
+                {isSubmitting ? 'Gerando...' : 'Gerar e Baixar'}
             </button>
-          </div>
-        </Modal>
-      )}
+        </div>
+    </Modal>
+)}
 
 
       <Modal isOpen={modalType === 'info'} onClose={closeModal} title={modalContent.title}>

@@ -4,21 +4,24 @@ import Modal from '../../components/Modal';
 import MinisterForm from '../../components/ministerForm/MinisterForm';
 import CredentialCard from '../../components/credential-card/CredentialCard';
 
-import { FaUserGraduate, FaTrashAlt, FaEdit, FaEye, FaIdCard} from 'react-icons/fa';
+import { FaUserGraduate, FaTrashAlt, FaEdit, FaEye, FaIdCard, FaFileAlt } from 'react-icons/fa';
 import { Role } from '../../enums/Role';
 import useAuth from '../../context/useAuth';
 import { translatePosition } from '../../utils/translations';
 import type { MinisterRequestDTO } from '../../services/minister/ministerService';
 import type { Minister } from '../../types/minister/Minister';
 import type { CredentialData } from '../../types/credential/Credential';
+import { generateDocument } from '../../services/document/DocumentService';
+import type { DocumentRequestDTO, DocumentType } from '../../types/document/Document';
 import { getMinisterCredential } from '../../services/credential/CredentialService';
 import { useReactToPrint } from 'react-to-print';
 
 const MinisterPage: React.FC = () => {
     const [ministers, setMinisters] = useState<Minister[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'details' | 'credential' | 'info' | null>(null);
+    const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'details' | 'credential' | 'info' | 'document' | null>(null);
     const [selectedMinister, setSelectedMinister] = useState<Minister | null>(null);
+    const [documentPurpose, setDocumentPurpose] = useState('');
     const [credentialData, setCredentialData] = useState<CredentialData | null>(null);
     const [modalContent, setModalContent] = useState({ title: '', message: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,6 +33,8 @@ const MinisterPage: React.FC = () => {
         documentTitle: 'Credencial do Ministro',
         contentRef: credentialRef
     });
+
+    const ministerDocumentType: DocumentType = 'RECOMMENDATION_LETTER_MINISTER';
 
     const handleShowInfoModal = useCallback((title: string, message: string) => {
         setModalType('info');
@@ -101,12 +106,51 @@ const MinisterPage: React.FC = () => {
             handleShowInfoModal('Sucesso!', 'Registro ministerial removido com sucesso.');
             closeModal();
             fetchMinisters();
-        } catch  {
+        } catch {
             handleShowInfoModal('Erro', 'Falha ao remover o registro ministerial.');
         } finally {
             setIsSubmitting(false);
         }
     }, [selectedMinister, closeModal, fetchMinisters, handleShowInfoModal]);
+
+
+    const handleGenerateDocument = useCallback((minister: Minister) => {
+        setSelectedMinister(minister);
+        setModalType('document');
+    }, []);
+
+    const handleDocumentSubmit = useCallback(async () => {
+        if (!selectedMinister) return;
+
+        setIsSubmitting(true);
+
+        const requestDTO: DocumentRequestDTO = {
+            documentType: ministerDocumentType,
+            idMinister: selectedMinister.id, // AQUI USAMOS o idMinister
+            purpose: documentPurpose,
+        };
+
+        try {
+            const response = await generateDocument(requestDTO);
+
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = `${requestDTO.documentType.toLowerCase()}_${selectedMinister.id}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+
+            handleShowInfoModal('Sucesso!', 'Documento gerado e baixado com sucesso!');
+            closeModal();
+        } catch (error) {
+            handleShowInfoModal('Erro', (error as Error).message);
+        } finally {
+            setIsSubmitting(false);
+        }
+    }, [selectedMinister, documentPurpose, closeModal, handleShowInfoModal]);
 
     if (loading) return <div className="loading-message">Carregando ministros...</div>;
 
@@ -150,6 +194,7 @@ const MinisterPage: React.FC = () => {
                                         <button onClick={() => handleEdit(minister)} className="btn btn-sm btn-warning me-2" title="Editar"><FaEdit /></button>
                                         <button onClick={() => handleDelete(minister)} className="btn btn-sm btn-danger me-2" title="Remover Cargo"><FaTrashAlt /></button>
                                         <button onClick={() => handleGenerateCredential(minister)} className="btn btn-sm btn-primary" title="Gerar Credencial"><FaIdCard /></button>
+                                        <button onClick={() => handleGenerateDocument(minister)} className="btn btn-sm btn-secondary" title="Gerar Carta de Recomendação"><FaFileAlt /></button>
                                     </td>
                                 )}
                             </tr>
@@ -212,6 +257,38 @@ const MinisterPage: React.FC = () => {
                     </div>
                 </Modal>
             )}
+
+            {selectedMinister && (
+                <Modal isOpen={modalType === 'document'} onClose={closeModal} title={`Gerar Carta de Recomendação para ${selectedMinister.fullName}`}>
+                    <div className="form-group mb-3">
+                        <p><strong>Tipo de Documento:</strong> Carta de Recomendação Ministerial</p>
+                    </div>
+
+                    <div className="form-group mb-3">
+                        <label htmlFor="documentPurpose" className="form-label">Finalidade (Opcional)</label>
+                        <textarea
+                            id="documentPurpose"
+                            className="form-control"
+                            rows={3}
+                            value={documentPurpose}
+                            onChange={(e) => setDocumentPurpose(e.target.value)}
+                            placeholder="Ex: Para apresentação em evento..."
+                        ></textarea>
+                    </div>
+
+                    <div className="modal-footer">
+                        <button className="btn btn-secondary" onClick={closeModal} disabled={isSubmitting}>Cancelar</button>
+                        <button
+                            className="btn btn-primary"
+                            onClick={handleDocumentSubmit}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? 'Gerando...' : 'Gerar e Baixar'}
+                        </button>
+                    </div>
+                </Modal>
+            )}
+
 
             <Modal isOpen={modalType === 'info'} onClose={closeModal} title={modalContent.title}>
                 <p>{modalContent.message}</p>

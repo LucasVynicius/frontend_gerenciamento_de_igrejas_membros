@@ -1,13 +1,12 @@
-// Define o tipo literal para os tipos de documentos válidos
-export type DocumentType = 'RECOMMENDATION_LETTER' | 'CERTIFICATE' | 'OFFICE';
+export type DocumentType = 'RECOMMENDATION_LETTER_MEMBER' | 'RECOMMENDATION_LETTER_MINISTER' | 'CERTIFICATE' | 'OFFICE';
 
 export interface DocumentRequestDTO {
-    // O tipo de documento a ser gerado
+    
     documentType: DocumentType;
 
-    // O ID do membro para quem o documento será gerado
-    idMember: number;
+    idMember?: number;
     
-    // Opcional: O propósito da carta, para ser preenchido no PDF
+    idMinister?: number;
+
     purpose?: string;
 }
