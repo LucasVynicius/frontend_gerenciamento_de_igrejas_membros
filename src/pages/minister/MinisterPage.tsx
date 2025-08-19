@@ -276,6 +276,7 @@ const MinisterPage: React.FC = () => {
                             <option value="MINISTER_APRESENTATION_LETTER">Carta de Apresentação</option>
                             <option value="MINISTER_CERTIFICATE">Certificado de Ministro</option>
                             <option value="LEADER_CERTIFICATE">Certificado de Liderança</option>
+                            <option value="MINISTER_ORDINATION">Certificado de Ordenação de Ministro</option>
                         </select>
                     </div>
 

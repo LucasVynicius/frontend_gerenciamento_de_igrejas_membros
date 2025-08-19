@@ -11,6 +11,7 @@ export type DocumentType = 'RECOMMENDATION_LETTER_MEMBER'
 | 'MEMBER_CERTIFICATE'
 | 'MINISTER_CERTIFICATE'
 | 'LEADER_CERTIFICATE'
+| 'MINISTER_ORDINATION'
 | 'OFFICE'
 
 export interface DocumentRequestDTO {
@@ -22,4 +23,8 @@ export interface DocumentRequestDTO {
     idMinister?: number;
 
     purpose?: string;
+
+    recipient?: string;
+    
+    subject?: string;
 }
