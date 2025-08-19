@@ -22,6 +22,7 @@ const MinisterPage: React.FC = () => {
     const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'details' | 'credential' | 'info' | 'document' | null>(null);
     const [selectedMinister, setSelectedMinister] = useState<Minister | null>(null);
     const [documentPurpose, setDocumentPurpose] = useState('');
+    const [selectedDocumentType, setSelectedDocumentType] = useState<DocumentType | ''>('');
     const [credentialData, setCredentialData] = useState<CredentialData | null>(null);
     const [modalContent, setModalContent] = useState({ title: '', message: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,8 +34,6 @@ const MinisterPage: React.FC = () => {
         documentTitle: 'Credencial do Ministro',
         contentRef: credentialRef
     });
-
-    const ministerDocumentType: DocumentType = 'RECOMMENDATION_LETTER_MINISTER';
 
     const handleShowInfoModal = useCallback((title: string, message: string) => {
         setModalType('info');
@@ -120,12 +119,12 @@ const MinisterPage: React.FC = () => {
     }, []);
 
     const handleDocumentSubmit = useCallback(async () => {
-        if (!selectedMinister) return;
+        if (!selectedMinister || !selectedDocumentType) return;
 
         setIsSubmitting(true);
 
         const requestDTO: DocumentRequestDTO = {
-            documentType: ministerDocumentType,
+            documentType: selectedDocumentType,
             idMinister: selectedMinister.id, // AQUI USAMOS o idMinister
             purpose: documentPurpose,
         };
@@ -259,9 +258,25 @@ const MinisterPage: React.FC = () => {
             )}
 
             {selectedMinister && (
-                <Modal isOpen={modalType === 'document'} onClose={closeModal} title={`Gerar Carta de Recomendação para ${selectedMinister.fullName}`}>
+                <Modal isOpen={modalType === 'document'} onClose={closeModal} title={`Gerar Documento para ${selectedMinister.fullName}`}>
+
+                    {/* Adicionamos o dropdown de seleção */}
                     <div className="form-group mb-3">
-                        <p><strong>Tipo de Documento:</strong> Carta de Recomendação Ministerial</p>
+                        <label htmlFor="documentType" className="form-label">Tipo de Documento</label>
+                        <select
+                            id="documentType"
+                            className="form-select"
+                            value={selectedDocumentType}
+                            onChange={(e) => setSelectedDocumentType(e.target.value as DocumentType)}
+                        >
+                            <option value="">Selecione...</option>
+                            <option value="RECOMMENDATION_LETTER_MINISTER">Carta de Recomendação</option>
+                            <option value="TRANSFER_LETTER_MINISTER">Carta de Transferência</option>
+                            <option value="DECLARATION_MINISTER_ACTIVE">Declaração de Ministro Ativo</option>
+                            <option value="MINISTER_APRESENTATION_LETTER">Carta de Apresentação</option>
+                            <option value="MINISTER_CERTIFICATE">Certificado de Ministro</option>
+                            <option value="LEADER_CERTIFICATE">Certificado de Liderança</option>
+                        </select>
                     </div>
 
                     <div className="form-group mb-3">
@@ -281,7 +296,8 @@ const MinisterPage: React.FC = () => {
                         <button
                             className="btn btn-primary"
                             onClick={handleDocumentSubmit}
-                            disabled={isSubmitting}
+                            // O botão fica desabilitado se nenhum tipo for selecionado
+                            disabled={isSubmitting || !selectedDocumentType}
                         >
                             {isSubmitting ? 'Gerando...' : 'Gerar e Baixar'}
                         </button>

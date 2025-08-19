@@ -300,6 +300,12 @@ const handleDocumentSubmit = useCallback(async () => {
                 {/* Usando os valores EXATOS do nosso enum do back-end */}
                 <option value="RECOMMENDATION_LETTER_MEMBER">Carta de Recomendação</option>
                 {/* Futuramente, você pode adicionar outros tipos aqui */}
+                <option value="TRANSFER_LETTER_MEMBER">Carta de Transferência</option>
+                <option value="DECLARATION_MEMBER_ACTIVE">Declaração de Membro Ativo</option>
+                <option value="MEMBER_APRESENTATION_LETTER">Carta de Apresentação</option>
+                <option value="BAPTISM_CERTIFICATE">Certificado de Batismo</option>
+                <option value="MEMBER_CERTIFICATE">Certificado de Membro</option>
+                <option value="LEADER_CERTIFICATE">Certificado de Liderança</option>
             </select>
         </div>
 
