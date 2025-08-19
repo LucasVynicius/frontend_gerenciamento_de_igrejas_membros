@@ -13,6 +13,7 @@ import ChurchPage from './pages/church/ChurchPage';
 import MinisterPage from './pages/minister/MinisterPage';
 import AdminUserPage from './pages/admin/AdminUserPage';
 import AdminRoute from './components/routes/AdminRoute';
+import OfficePage from './pages/office/OfficePage';
 
 const ProtectedLayout = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -44,6 +45,7 @@ function App() {
             <Route path="/membros" element={<MemberPage />} />
             <Route path="/igrejas" element={<ChurchPage />} />
             <Route path="/ministros" element={<MinisterPage />} />
+            <Route path="/oficios" element={<OfficePage />} />
             <Route element={<AdminRoute />}>
               <Route path="admin/users" element={<AdminUserPage />} />
             </Route>
