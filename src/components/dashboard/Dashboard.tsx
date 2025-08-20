@@ -1,10 +1,12 @@
 import React from 'react';
 import DashboardCard from '../../components/dashboard/DashboardCard';
+import DashboardStats from '../../components/dashboard/DashboardStats';
 import { FaUsers, FaChurch, FaUserGraduate, FaLock, FaFileAlt, FaUserCog } from 'react-icons/fa';
 import './Dashboard.css';
 import useAuth from '../../context/useAuth';
 
 const Dashboard: React.FC = () => {
+    
     const { user } = useAuth();
     return (
 
@@ -14,6 +16,8 @@ const Dashboard: React.FC = () => {
                     <h3>Bem-vindo, {user.firstName} {user.lastName}!</h3>
                 </div>
             )}
+
+            <DashboardStats />
 
             <div className="dashboard-grid">
                 <DashboardCard icon={<FaChurch />} title="Gerenciamento de Igrejas" link="/igrejas" />

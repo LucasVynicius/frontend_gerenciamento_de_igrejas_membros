@@ -57,3 +57,55 @@
         grid-template-columns: 1fr;
     }
 }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px; /* Espaço entre os stats e a navegação */
+}
+
+.stat-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-left: 5px solid;
+}
+
+.stat-icon {
+    color: #fff;
+    background-color: #ccc;
+    padding: 12px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-info h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.stat-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.stat-card.members { border-color: #0d6efd; }
+.stat-card.members .stat-icon { background-color: #0d6efd; }
+
+.stat-card.ministers { border-color: #198754; }
+.stat-card.ministers .stat-icon { background-color: #198754; }
+
+.stat-card.leaders { border-color: #ffc107; }
+.stat-card.leaders .stat-icon { background-color: #ffc107; }
+
+.stat-card.churches { border-color: #dc3545; }
+.stat-card.churches .stat-icon { background-color: #dc3545; }
