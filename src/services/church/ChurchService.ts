@@ -14,7 +14,7 @@ export const createChurch = async (data: Church): Promise<Church> => {
 };
 
 export const updateChurch = async (
-  id: string,
+  id: number,
   data: Church
 ): Promise<Church> => {
   const response = await api.put(`/churches/${id}`, data);
@@ -24,3 +24,8 @@ export const updateChurch = async (
 export const deleteChurch = async (id: string): Promise<void> => {
   await api.delete(`/igrejas/${id}`);
 };
+
+export const getChurchById = async (id: number): Promise<Church> =>{
+   const { data } = await api.get(`/churches/${id}`)
+    return data
+}

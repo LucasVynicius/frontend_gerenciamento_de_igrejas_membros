@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { login as apiLogin } from '../services/authService';
+import { login as apiLogin , getLoggedInUser} from '../services/authService';
 import { getMyInfo } from '../services/user/userService';
 import { api } from '../services/api';
 import type { AuthRequest } from '../services/authService';
@@ -46,11 +46,14 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
     const login = useCallback(async (credentials: AuthRequest) => {
         try {
-            const { accessToken } = await apiLogin(credentials);
+            const { accessToken } = await apiLogin(credentials); // Essa chamada usa 'authApi', que não tem o interceptor
             localStorage.setItem('accessToken', accessToken);
+            // A linha abaixo é a que estava faltando e causa o erro 401 na próxima requisição!
             api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-            // Buscar as informações do usuário logado após o login
-            const userInfo = await getMyInfo();
+            const userInfo = await getLoggedInUser();
+
+            console.log("Role salva no AuthContext:", userInfo.role);
+
             setUser(userInfo);
         } catch (error) {
             logout();

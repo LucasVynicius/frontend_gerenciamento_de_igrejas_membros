@@ -1,45 +1,25 @@
-import { authApi } from './api'; 
+import { api } from './api';
 import { AxiosError } from 'axios';
 
+// Interfaces para os DTOs (Data Transfer Objects)
 export interface UserInfo {
+  id: number;
+  firstName: string;
+  lastName: string;
   username: string;
   email: string;
-  role: 'ADMIN' | 'SECRETARY';
+  role: 'ADMIN' | 'SECRETARY' | 'USER';
+  enabled: boolean;
 }
 
-export const getLoggedInUser = async (token: string): Promise<UserInfo> => {
-  try {
-    const response = await authApi.get<UserInfo>('/auth/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
-
-  } catch (error) {
-    const errorMessage =
-      (error as AxiosError<{ message?: string }>)?.response?.data?.message ||
-      'Erro ao carregar informações do usuário.';
-    throw new Error(errorMessage);
-  }
-};
-
 export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
   username: string;
   email: string;
   password: string;
   role: 'ADMIN' | 'SECRETARY';
 }
-
-export const register = async (data: RegisterRequest): Promise<UserInfo> => {
-  try {
-    const response = await authApi.post<UserInfo>('/auth/register', data);
-    return response.data;
-  } catch (error) {
-    const errorMessage =
-      (error as AxiosError<{ message?: string }>)?.response?.data?.message ||
-      'Erro ao registrar usuário.';
-    throw new Error(errorMessage);
-  }
-};
 
 export interface AuthRequest {
   username: string;
@@ -51,14 +31,44 @@ export interface AuthResponse {
   refreshToken: string | null;
 }
 
+
 export const login = async (credentials: AuthRequest): Promise<AuthResponse> => {
   try {
-    const response = await authApi.post<AuthResponse>('/auth/login', credentials);
+    const response = await api.post<AuthResponse>('/auth/login', credentials);
     return response.data;
   } catch (error) {
-    const errorMessage =
-      (error as AxiosError<{ message?: string }>)?.response?.data?.message ||
-      'Erro ao efetuar login. Verifique suas credenciais.';
+    const errorMessage = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erro ao efetuar login. Verifique suas credenciais.';
+    throw new Error(errorMessage);
+  }
+};
+
+
+export const register = async (data: RegisterRequest): Promise<UserInfo> => {
+  try {
+    const response = await api.post<UserInfo>('/auth/register', data);
+    return response.data;
+  } catch (error) {
+    const errorMessage = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erro ao registrar usuário.';
+    throw new Error(errorMessage);
+  }
+};
+
+
+export const getLoggedInUser = async (): Promise<UserInfo> => {
+  try {
+    const response = await api.get<UserInfo>('/users/me');
+
+
+    const userInfo: UserInfo = {
+      ...response.data,
+      // Normaliza a role aqui, removendo o prefixo "ROLE_"
+      role: response.data.role.replace('ROLE_', '') as 'ADMIN' | 'SECRETARY' | 'USER',
+    };
+
+    // RETORNE O OBJETO CORRIGIDO
+    return userInfo;
+  } catch (error) {
+    const errorMessage = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erro ao carregar informações do usuário.';
     throw new Error(errorMessage);
   }
 };

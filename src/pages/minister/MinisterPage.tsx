@@ -4,7 +4,7 @@ import Modal from '../../components/Modal';
 import MinisterForm from '../../components/ministerForm/MinisterForm';
 import CredentialCard from '../../components/credential-card/CredentialCard';
 
-import { FaUserGraduate, FaTrashAlt, FaEdit, FaEye, FaIdCard, FaFileAlt } from 'react-icons/fa';
+import { FaTrashAlt, FaEdit, FaEye, FaIdCard, FaFileAlt } from 'react-icons/fa';
 import { Role } from '../../enums/Role';
 import useAuth from '../../context/useAuth';
 import { translatePosition } from '../../utils/translations';
@@ -63,7 +63,6 @@ const MinisterPage: React.FC = () => {
         setCredentialData(null);
     }, []);
 
-    const handleConsecrate = useCallback(() => { setModalType('create'); }, []);
     const handleEdit = useCallback((minister: Minister) => { setSelectedMinister(minister); setModalType('edit'); }, []);
     const handleDelete = useCallback((minister: Minister) => { setSelectedMinister(minister); setModalType('delete'); }, []);
     const handleDetails = useCallback((minister: Minister) => { setSelectedMinister(minister); setModalType('details'); }, []);
@@ -159,15 +158,8 @@ const MinisterPage: React.FC = () => {
             <div className="page-header-container">
                 <div className="page-title-group">
                     <h1>Gerenciamento de Ministros</h1>
-                    <p>Consagre membros a cargos ministeriais e gerencie os registros.</p>
                 </div>
-                {canManage && (
-                    <div className="page-actions">
-                        <button className="btn-add" onClick={handleConsecrate}>
-                            <FaUserGraduate /> Consagrar Membro
-                        </button>
-                    </div>
-                )}
+            
             </div>
 
             <div className="table-container">

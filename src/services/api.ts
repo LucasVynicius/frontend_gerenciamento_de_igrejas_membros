@@ -1,18 +1,22 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
-export const authApi = axios.create({
+// Cria uma única instância exportável do Axios
+export const api: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL, 
-});
-
+// Configura um interceptor de requisições para anexar o token JWT
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Apenas anexa o token se a requisição não for para o endpoint de login
+    if (config.url !== '/auth/login') {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },

@@ -10,7 +10,7 @@ export interface UserInfo {
   lastName: string;
   username: string;
   email: string;
-  role: 'ADMIN' | 'SECRETARY';
+  role: 'ADMIN' | 'SECRETARY' | 'USER';
   enabled: boolean;
 }
 
@@ -21,7 +21,7 @@ export interface UserRequestDTO {
   username: string;
   email: string;
   password?: string;
-  role: 'ADMIN' | 'SECRETARY';
+  role: 'ADMIN' | 'SECRETARY' | 'USER';
 }
 
 // Interface para a requisição de atualização de usuário (com o ID)
@@ -42,7 +42,7 @@ export interface UserFormValues {
     username: string;
     email: string;
     password?: string; 
-    role: 'ADMIN' | 'SECRETARY';
+    role: 'ADMIN' | 'SECRETARY' | 'USER';
     enabled?: boolean; 
 
 }

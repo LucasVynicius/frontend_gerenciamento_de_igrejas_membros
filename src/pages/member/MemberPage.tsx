@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import useAuth from '../../context/useAuth';
+import { Role } from '../../enums/Role';
 import Modal from '../../components/Modal';
 import MemberForm from '../../components/member-form/MemberForm';
 import UploadPhotoModal from '../../components/upload-photo-modal/UploadPhotoModal';
@@ -12,7 +13,7 @@ import type { DocumentRequestDTO, DocumentType } from '../../types/document/Docu
 import type { Member, MemberRequestDTO, MemberUpdateRequestDTO } from '../../types/member/Member';
 import type { Church } from '../../types/church/Church';
 import type { CredentialData } from '../../types/credential/Credential';
-import { FaEdit, FaTrash, FaEye, FaIdCard, FaCamera, FaFileAlt } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaEye, FaIdCard, FaCamera, FaFileAlt, FaUserGraduate } from 'react-icons/fa';
 import { useReactToPrint } from 'react-to-print';
 
 
@@ -23,12 +24,15 @@ const MemberPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [credentialData, setCredentialData] = useState<CredentialData | null>(null);
-  const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'details' | 'upload' | 'credential' | 'document' | 'info' | null>(null);
+  const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'details' | 'upload' | 'credential' | 'document' | 'info' | 'consecrate' | null>(null);
   const [modalContent, setModalContent] = useState({ title: '', message: '' });
   const [selectedDocumentType, setSelectedDocumentType] = useState<DocumentType | ''>('');
   const [documentPurpose, setDocumentPurpose] = useState('');
 
-  const { user } = useAuth();
+  const { user } = useAuth(); // <-- Obtenha o usuário primeiro
+  // Depois, defina a variável de permissão
+  const canConsagrate = user?.role === Role.ADMIN || user?.role === Role.SECRETARY;
+
   const credentialRef = useRef(null);
 
   const handlePrint = useReactToPrint({
@@ -66,6 +70,12 @@ const MemberPage: React.FC = () => {
   }, [setModalType, setSelectedMember, setCredentialData, setDocumentPurpose]);
 
   const handleCreate = useCallback(() => setModalType('create'), [setModalType]);
+  // A função `handleConsagrateFromMember` deve receber o membro como argumento
+  const handleConsagrate = useCallback((member: Member) => {
+    setSelectedMember(member);
+    setModalType('consecrate'); // Ação de consagrar, que abrirá um modal ou formulário específico
+  }, []);
+
   const handleEdit = useCallback((member: Member) => { setSelectedMember(member); setModalType('edit'); }, [setModalType, setSelectedMember]);
   const handleDelete = useCallback((member: Member) => { setSelectedMember(member); setModalType('delete'); }, [setModalType, setSelectedMember]);
   const handleDetails = useCallback((member: Member) => { setSelectedMember(member); setModalType('details'); }, [setModalType, setSelectedMember]);
@@ -142,42 +152,42 @@ const MemberPage: React.FC = () => {
     }
   }, [selectedMember, closeModal, fetchPageData, handleShowInfoModal, setIsSubmitting, getMemberById, uploadMemberPhoto, setSelectedMember]);
 
-const handleDocumentSubmit = useCallback(async () => {
-    
+  const handleDocumentSubmit = useCallback(async () => {
+
     if (!selectedMember || !selectedDocumentType) {
-        return; 
+      return;
     }
 
     setIsSubmitting(true);
-    
+
 
     const requestDTO: DocumentRequestDTO = {
-        documentType: selectedDocumentType, 
-        idMember: selectedMember.id,
-        purpose: documentPurpose,
+      documentType: selectedDocumentType,
+      idMember: selectedMember.id,
+      purpose: documentPurpose,
     };
 
     try {
-        const response = await generateDocument(requestDTO);
+      const response = await generateDocument(requestDTO);
 
-        const blob = new Blob([response.data], { type: 'application/pdf' });
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = downloadUrl;
-        link.download = `${requestDTO.documentType.toLowerCase()}_${selectedMember.id}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.URL.revokeObjectURL(downloadUrl);
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `${requestDTO.documentType.toLowerCase()}_${selectedMember.id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(downloadUrl);
 
-        handleShowInfoModal('Sucesso!', 'Documento gerado e baixado com sucesso!');
-        closeModal();
+      handleShowInfoModal('Sucesso!', 'Documento gerado e baixado com sucesso!');
+      closeModal();
     } catch (error) {
-        handleShowInfoModal('Erro', (error as Error).message);
+      handleShowInfoModal('Erro', (error as Error).message);
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
-}, [selectedMember, selectedDocumentType, documentPurpose, closeModal, handleShowInfoModal]);
+  }, [selectedMember, selectedDocumentType, documentPurpose, closeModal, handleShowInfoModal]);
 
   if (loading) return <div className="loading-message">Carregando membros...</div>;
 
@@ -220,6 +230,15 @@ const handleDocumentSubmit = useCallback(async () => {
                   <button className="btn btn-sm btn-secondary me-2" onClick={() => handleUpload(member)} title="Upload de Foto"><FaCamera /></button>
                   <button className="btn btn-sm btn-primary me-2" onClick={() => handleGenerateCredential(member)} title="Gerar Credencial"><FaIdCard /></button>
                   <button className="btn btn-sm btn-info" onClick={() => handleGenerateDocument(member)} title="Gerar Documento"><FaFileAlt /></button>
+                  {canConsagrate && (
+                    <button
+                      className="btn btn-sm btn-success me-2"
+                      onClick={() => handleConsagrate(member)}
+                      title="Consagrar Ministro"
+                    >
+                      <FaUserGraduate />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -284,52 +303,52 @@ const handleDocumentSubmit = useCallback(async () => {
         </Modal>
       )}
 
-{selectedMember && (
-    <Modal isOpen={modalType === 'document'} onClose={closeModal} title={`Gerar Documento para ${selectedMember.fullName}`}>
-        {/* GRUPO DO TIPO DE DOCUMENTO */}
-        <div className="form-group mb-3">
+      {selectedMember && (
+        <Modal isOpen={modalType === 'document'} onClose={closeModal} title={`Gerar Documento para ${selectedMember.fullName}`}>
+          {/* GRUPO DO TIPO DE DOCUMENTO */}
+          <div className="form-group mb-3">
             <label htmlFor="documentType" className="form-label">Tipo de Documento</label>
             <select
-                id="documentType"
-                className="form-select"
-                value={selectedDocumentType}
-                onChange={(e) => setSelectedDocumentType(e.target.value as DocumentType)}
+              id="documentType"
+              className="form-select"
+              value={selectedDocumentType}
+              onChange={(e) => setSelectedDocumentType(e.target.value as DocumentType)}
             >
-                <option value="">Selecione...</option>
-                <option value="RECOMMENDATION_LETTER_MEMBER">Carta de Recomendação</option>
-                <option value="TRANSFER_LETTER_MEMBER">Carta de Transferência</option>
-                <option value="DECLARATION_MEMBER_ACTIVE">Declaração de Membro Ativo</option>
-                <option value="MEMBER_APRESENTATION_LETTER">Carta de Apresentação</option>
-                <option value="BAPTISM_CERTIFICATE">Certificado de Batismo</option>
-                <option value="MEMBER_CERTIFICATE">Certificado de Membro</option>
-                <option value="LEADER_CERTIFICATE">Certificado de Liderança</option>
+              <option value="">Selecione...</option>
+              <option value="RECOMMENDATION_LETTER_MEMBER">Carta de Recomendação</option>
+              <option value="TRANSFER_LETTER_MEMBER">Carta de Transferência</option>
+              <option value="DECLARATION_MEMBER_ACTIVE">Declaração de Membro Ativo</option>
+              <option value="MEMBER_APRESENTATION_LETTER">Carta de Apresentação</option>
+              <option value="BAPTISM_CERTIFICATE">Certificado de Batismo</option>
+              <option value="MEMBER_CERTIFICATE">Certificado de Membro</option>
+              <option value="LEADER_CERTIFICATE">Certificado de Liderança</option>
             </select>
-        </div>
+          </div>
 
-        <div className="form-group mb-3">
+          <div className="form-group mb-3">
             <label htmlFor="documentPurpose" className="form-label">Finalidade (Opcional)</label>
             <textarea
-                id="documentPurpose"
-                className="form-control"
-                rows={3}
-                value={documentPurpose}
-                onChange={(e) => setDocumentPurpose(e.target.value)}
-                placeholder="Ex: Para apresentação na empresa X."
+              id="documentPurpose"
+              className="form-control"
+              rows={3}
+              value={documentPurpose}
+              onChange={(e) => setDocumentPurpose(e.target.value)}
+              placeholder="Ex: Para apresentação na empresa X."
             ></textarea>
-        </div>
+          </div>
 
-        <div className="modal-footer">
+          <div className="modal-footer">
             <button className="btn btn-secondary" onClick={closeModal} disabled={isSubmitting}>Cancelar</button>
-            <button 
-                className="btn btn-primary" 
-                onClick={handleDocumentSubmit} 
-                disabled={isSubmitting || !selectedDocumentType}
+            <button
+              className="btn btn-primary"
+              onClick={handleDocumentSubmit}
+              disabled={isSubmitting || !selectedDocumentType}
             >
-                {isSubmitting ? 'Gerando...' : 'Gerar e Baixar'}
+              {isSubmitting ? 'Gerando...' : 'Gerar e Baixar'}
             </button>
-        </div>
-    </Modal>
-)}
+          </div>
+        </Modal>
+      )}
 
 
       <Modal isOpen={modalType === 'info'} onClose={closeModal} title={modalContent.title}>

@@ -1,7 +1,7 @@
 import { AddressDTO } from "../address/Address";
 
 export interface Church {
-  id: string;
+  id: number;
   name: string;
   tradeName: string;
   registryType: string;

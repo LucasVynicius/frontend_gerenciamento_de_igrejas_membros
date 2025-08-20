@@ -17,7 +17,6 @@ const Dashboard: React.FC = () => {
                 </div>
             )}
 
-            <DashboardStats />
 
             <div className="dashboard-grid">
                 <DashboardCard icon={<FaChurch />} title="Gerenciamento de Igrejas" link="/igrejas" />
@@ -30,6 +29,8 @@ const Dashboard: React.FC = () => {
                     <DashboardCard icon={<FaUserCog />} title="Gerenciar Usuários" link="/admin/users" />
                 )}
             </div>
+
+            <DashboardStats />
         </div>
     );
 };
