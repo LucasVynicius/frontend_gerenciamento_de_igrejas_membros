@@ -30,6 +30,7 @@ const MinisterPage: React.FC = () => {
 
     const canManage = user?.role === Role.ADMIN || user?.role === Role.SECRETARY;
     const credentialRef = useRef(null);
+    
     const handlePrint = useReactToPrint({
         documentTitle: 'Credencial do Ministro',
         contentRef: credentialRef
@@ -125,7 +126,7 @@ const MinisterPage: React.FC = () => {
 
         const requestDTO: DocumentRequestDTO = {
             documentType: selectedDocumentType,
-            idMinister: selectedMinister.id, // AQUI USAMOS o idMinister
+            idMinister: selectedMinister.id, 
             purpose: documentPurpose,
         };
 
@@ -149,7 +150,7 @@ const MinisterPage: React.FC = () => {
         } finally {
             setIsSubmitting(false);
         }
-    }, [selectedMinister, documentPurpose, closeModal, handleShowInfoModal]);
+    }, [selectedMinister, documentPurpose, closeModal, handleShowInfoModal,  selectedDocumentType]);
 
     if (loading) return <div className="loading-message">Carregando ministros...</div>;
 
@@ -260,7 +261,6 @@ const MinisterPage: React.FC = () => {
             {selectedMinister && (
                 <Modal isOpen={modalType === 'document'} onClose={closeModal} title={`Gerar Documento para ${selectedMinister.fullName}`}>
 
-                    {/* Adicionamos o dropdown de seleção */}
                     <div className="form-group mb-3">
                         <label htmlFor="documentType" className="form-label">Tipo de Documento</label>
                         <select
@@ -297,7 +297,6 @@ const MinisterPage: React.FC = () => {
                         <button
                             className="btn btn-primary"
                             onClick={handleDocumentSubmit}
-                            // O botão fica desabilitado se nenhum tipo for selecionado
                             disabled={isSubmitting || !selectedDocumentType}
                         >
                             {isSubmitting ? 'Gerando...' : 'Gerar e Baixar'}

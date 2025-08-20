@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios'; // Assumindo que você usa axios diretamente
 import { generateDocument } from '../../services/document/DocumentService';
-import type { DocumentRequestDTO, DocumentType } from '../../types/document/Document';
-// Importe seu componente de Modal
+import type { DocumentRequestDTO, DocumentType,  } from '../../types/document/Document';
 import Modal from '../../components/Modal';
 
 const OfficePage: React.FC = () => {
@@ -10,32 +9,45 @@ const OfficePage: React.FC = () => {
     const [selectedDocumentType, setSelectedDocumentType] = useState<DocumentType | ''>('');
     const [recipient, setRecipient] = useState('');
     const [subject, setSubject] = useState('');
-    const [documentBody, setDocumentBody] = useState(''); 
+    const [documentBody, setDocumentBody] = useState('');
+ 
 
     
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [modalInfo, setModalInfo] = useState<{ isOpen: boolean, title: string, message: string }>({ isOpen: false, title: '', message: '' });
 
+
     const handleDocumentTypeChange = async (type: DocumentType | '') => {
-        setSelectedDocumentType(type);
+    setSelectedDocumentType(type);
+    setRecipient('');
+    setSubject('');
+    setDocumentBody('');
 
-        setRecipient('');
-        setSubject('');
-        setDocumentBody(''); 
-
-        if (type) {
-            try {
-                
-                const response = await axios.get(`/api/templates/${type}`);
-                if (response.data) {
-                    setDocumentBody(response.data);
-                }
-            } catch (error) {
-                console.error("Erro ao buscar template:", error);
-                
+    if (type) {
+        try {
+            
+            const response = await axios.get(`/api/templates/${type}`, {
+                headers: {
+                    'Cache-Control': 'no-cache', 
+                    'Pragma': 'no-cache',        
+                    'Expires': '0',
+                },
+            });
+            
+            
+            if (response.data && typeof response.data === 'string') {
+                setDocumentBody(response.data);
+            } else {
+                setDocumentBody(''); 
             }
+        } catch (error) {
+            console.error("Erro ao buscar template:", error);
+            setDocumentBody('');
         }
-    };
+    } else {
+        setDocumentBody('');
+    }
+};
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -94,6 +106,9 @@ const OfficePage: React.FC = () => {
                     >
                         <option value="">Selecione o tipo...</option>
                         <option value="COMMUNICATION_OFFICE">Comunicado</option>
+                        <option value="EVENT_INVITATION_OFFICE">Convite para Evento</option>
+                        <option value="SOLICITATION_OFFICE">Solicitações</option>
+                        <option value="PUBLIC_PERMIT_REQUEST_OFFICE">Solicitação de Alvará/Licença</option>
 
                     </select>
                 </div>

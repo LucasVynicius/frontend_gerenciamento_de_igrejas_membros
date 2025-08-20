@@ -143,17 +143,16 @@ const MemberPage: React.FC = () => {
   }, [selectedMember, closeModal, fetchPageData, handleShowInfoModal, setIsSubmitting, getMemberById, uploadMemberPhoto, setSelectedMember]);
 
 const handleDocumentSubmit = useCallback(async () => {
-    // A verificação abaixo resolve o Erro 2
-    // Ela garante para o TypeScript que 'selectedMember' e 'selectedDocumentType' não são nulos/vazios
+    
     if (!selectedMember || !selectedDocumentType) {
         return; 
     }
 
     setIsSubmitting(true);
     
-    // Com a importação do Passo 1, este erro some
+
     const requestDTO: DocumentRequestDTO = {
-        documentType: selectedDocumentType, // Agora o TS sabe que não é uma string vazia
+        documentType: selectedDocumentType, 
         idMember: selectedMember.id,
         purpose: documentPurpose,
     };
@@ -297,9 +296,7 @@ const handleDocumentSubmit = useCallback(async () => {
                 onChange={(e) => setSelectedDocumentType(e.target.value as DocumentType)}
             >
                 <option value="">Selecione...</option>
-                {/* Usando os valores EXATOS do nosso enum do back-end */}
                 <option value="RECOMMENDATION_LETTER_MEMBER">Carta de Recomendação</option>
-                {/* Futuramente, você pode adicionar outros tipos aqui */}
                 <option value="TRANSFER_LETTER_MEMBER">Carta de Transferência</option>
                 <option value="DECLARATION_MEMBER_ACTIVE">Declaração de Membro Ativo</option>
                 <option value="MEMBER_APRESENTATION_LETTER">Carta de Apresentação</option>
@@ -309,7 +306,6 @@ const handleDocumentSubmit = useCallback(async () => {
             </select>
         </div>
 
-        {/* GRUPO DA FINALIDADE (Purpose) */}
         <div className="form-group mb-3">
             <label htmlFor="documentPurpose" className="form-label">Finalidade (Opcional)</label>
             <textarea

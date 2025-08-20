@@ -3,7 +3,7 @@ export type DocumentType = 'RECOMMENDATION_LETTER_MEMBER'
 |'TRANSFER_LETTER_MEMBER' 
 | 'TRANSFER_LETTER_MINISTER ' 
 | 'TRANSFER_LETTER_MEMBER,'
-| ' DECLARATION_MEMBER_ACTIVE'
+| 'DECLARATION_MEMBER_ACTIVE'
 | 'DECLARATION_MINISTER_ACTIVE'
 | 'MEMBER_APRESENTATION_LETTER' 
 | 'MINISTER_APRESENTATION_LETTER'
@@ -13,7 +13,9 @@ export type DocumentType = 'RECOMMENDATION_LETTER_MEMBER'
 | 'LEADER_CERTIFICATE'
 | 'MINISTER_ORDINATION'
 | 'COMMUNICATION_OFFICE'
-| 'OFFICE'
+| 'EVENT_INVITATION_OFFICE'
+| 'SOLICITATION_OFFICE'
+| 'PUBLIC_PERMIT_REQUEST_OFFICE'
 
 export interface DocumentRequestDTO {
     
@@ -23,9 +25,13 @@ export interface DocumentRequestDTO {
     
     idMinister?: number;
 
-    purpose?: string;
+    purpose?: string ;
+
+    body?: string;
 
     recipient?: string;
     
     subject?: string;
+
+    details?: { [key: string]: string };
 }
