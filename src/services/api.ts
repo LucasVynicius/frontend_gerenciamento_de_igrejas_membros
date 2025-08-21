@@ -1,6 +1,6 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosError } from 'axios';
 
-// Cria uma única instância exportável do Axios
+
 export const api: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
@@ -8,19 +8,19 @@ export const api: AxiosInstance = axios.create({
   },
 });
 
-// Configura um interceptor de requisições para anexar o token JWT
+
 api.interceptors.request.use(
   (config) => {
-    // Apenas anexa o token se a requisição não for para o endpoint de login
-    if (config.url !== '/auth/login') {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+    const token = localStorage.getItem('accessToken');
+
+    const isLoginRequest = config.url && config.url.includes('/auth/login');
+    if (token && !isLoginRequest) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   }
 );

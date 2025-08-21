@@ -15,6 +15,7 @@ import AdminUserPage from './pages/admin/AdminUserPage';
 import AdminRoute from './components/routes/AdminRoute';
 import OfficePage from './pages/office/OfficePage';
 import MeetingReportsPage from './pages/meeting/MeetingPage';
+import PermissionsPage from './pages/permission/PermissionsPage';
 
 const ProtectedLayout = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -48,6 +49,7 @@ function App() {
             <Route path="/ministros" element={<MinisterPage />} />
             <Route path="/oficios" element={<OfficePage />} />
             <Route path='/relatorios' element={<MeetingReportsPage/>} />
+            <Route path='/permissoes' element={<PermissionsPage/>} />
             <Route element={<AdminRoute />}>
               <Route path="admin/users" element={<AdminUserPage />} />
             </Route>

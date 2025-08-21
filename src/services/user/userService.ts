@@ -1,9 +1,7 @@
 import { api } from '../api';
 import { AxiosError } from 'axios';
 
-// Interfaces de Tipagem
-//-----------------------------------------------------
-// Interface para o objeto de usuário completo, como retornado pela API
+
 export interface UserInfo {
   id: number;
   firstName: string;
@@ -14,7 +12,6 @@ export interface UserInfo {
   enabled: boolean;
 }
 
-// Interface para a requisição de criação de usuário (sem o ID)
 export interface UserRequestDTO {
   firstName: string;
   lastName: string;
@@ -24,7 +21,6 @@ export interface UserRequestDTO {
   role: 'ADMIN' | 'SECRETARY' | 'USER';
 }
 
-// Interface para a requisição de atualização de usuário (com o ID)
 export interface UserUpdateRequestDTO {
   id: number;
   firstName: string;
@@ -36,14 +32,14 @@ export interface UserUpdateRequestDTO {
 }
 
 export interface UserFormValues {
-    id?: number;
-    firstName: string;
-    lastName: string;
-    username: string;
-    email: string;
-    password?: string; 
-    role: 'ADMIN' | 'SECRETARY' | 'USER';
-    enabled?: boolean; 
+  id?: number;
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  password?: string;
+  role: 'ADMIN' | 'SECRETARY' | 'USER';
+  enabled?: boolean;
 
 }
 

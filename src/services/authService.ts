@@ -1,7 +1,7 @@
 import { api } from './api';
 import { AxiosError } from 'axios';
 
-// Interfaces para os DTOs (Data Transfer Objects)
+
 export interface UserInfo {
   id: number;
   firstName: string;
@@ -33,13 +33,25 @@ export interface AuthResponse {
 
 
 export const login = async (credentials: AuthRequest): Promise<AuthResponse> => {
-  try {
-    const response = await api.post<AuthResponse>('/auth/login', credentials);
-    return response.data;
-  } catch (error) {
-    const errorMessage = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erro ao efetuar login. Verifique suas credenciais.';
-    throw new Error(errorMessage);
-  }
+    try {
+        const response = await api.post<AuthResponse>('/auth/login', credentials);
+
+        // --- ADICIONADO: Lógica para salvar o token ---
+        if (response.data.accessToken) {
+            localStorage.setItem('accessToken', response.data.accessToken);
+        }
+        
+        // Opcional: Se você usa refreshToken, salve-o também
+        if (response.data.refreshToken) {
+            localStorage.setItem('refreshToken', response.data.refreshToken);
+        }
+        // --- FIM DA LÓGICA ADICIONADA ---
+
+        return response.data;
+    } catch (error) {
+        const errorMessage = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erro ao efetuar login. Verifique suas credenciais.';
+        throw new Error(errorMessage);
+    }
 };
 
 
