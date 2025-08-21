@@ -15,13 +15,12 @@ export interface MeetingFormInitialData {
     participantIds?: number[];
 }
 
-// Interface de propriedades do componente
+
 interface MeetingFormProps {
     initialData?: MeetingFormInitialData | null;
     onSubmit: (data: MeetingRequestDTO) => void;
     onCancel: () => void;
     isSubmitting: boolean;
-    // Adiciona as props que estavam faltando
     ministers: MinisterInfo[];
 
 }

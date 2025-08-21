@@ -2,6 +2,10 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { getMinisters, consecrateMinister, deleteMinister, updateMinister } from '../../services/minister/ministerService';
 import Modal from '../../components/Modal';
 import MinisterForm from '../../components/ministerForm/MinisterForm';
+import { getMembers } from '../../services/member/memberService';
+import { Member } from '../../types/member/Member';
+import { Church } from '../../types/church/Church';
+import { getChurches } from '../../services/church/ChurchService';
 import CredentialCard from '../../components/credential-card/CredentialCard';
 
 import { FaTrashAlt, FaEdit, FaEye, FaIdCard, FaFileAlt } from 'react-icons/fa';
@@ -26,6 +30,8 @@ const MinisterPage: React.FC = () => {
     const [credentialData, setCredentialData] = useState<CredentialData | null>(null);
     const [modalContent, setModalContent] = useState({ title: '', message: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [members, setMembers] = useState<Member[]>([]);
+    const [churches, setChurches] = useState<Church[]>([]);
     const { user } = useAuth();
 
     const canManage = user?.role === Role.ADMIN || user?.role === Role.SECRETARY;
@@ -56,6 +62,22 @@ const MinisterPage: React.FC = () => {
     useEffect(() => {
         fetchMinisters();
     }, [fetchMinisters]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch the data from your services
+                const membersData = await getMembers(); 
+                const churchesData = await getChurches();
+                setMembers(membersData);
+                setChurches(churchesData);
+            } catch (error) {
+                console.error("Failed to fetch required data", error);
+            }
+        };
+        fetchData();
+    }, []);
+
 
     const closeModal = useCallback(() => {
         setModalType(null);
@@ -212,6 +234,8 @@ const MinisterPage: React.FC = () => {
                     onCancel={closeModal}
                     isSubmitting={isSubmitting}
                     initialData={modalType === 'edit' ? selectedMinister : undefined}
+                    members={members} 
+                churches={churches}
                 />
             </Modal>
 

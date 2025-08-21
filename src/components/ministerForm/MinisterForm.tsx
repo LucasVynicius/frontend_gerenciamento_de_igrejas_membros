@@ -15,26 +15,24 @@ type MinisterFormInitialData = {
 };
 
 interface MinisterFormProps {
-  initialData?: MinisterFormInitialData;
+  initialData?: MinisterFormInitialData | null;
   onSubmit: (data: MinisterRequestDTO) => void;
   onCancel: () => void;
   isSubmitting: boolean;
-  members: Member[]; // Recebe a lista de membros por prop
-  churches: Church[]; // Recebe a lista de igrejas por prop
+  members: Member[]; 
+  churches: Church[]; 
 }
 
-const MinisterForm: React.FC<MinisterFormProps> = ({ initialData, onSubmit, onCancel, isSubmitting, members, churches, }) => {
+const MinisterForm: React.FC<MinisterFormProps> = ({ initialData , onSubmit, onCancel, isSubmitting, members, churches, }) => {
 
   const { handleSubmit, formState: { errors }, register, reset } = useForm<MinisterRequestDTO>();
 
   useEffect(() => {
     if (initialData) {
-      // Usa `reset` com dados padrão e os dados iniciais, se existirem
       reset({
         idMember: initialData.idMember,
         idChurch: initialData.idChurch,
         position: initialData.position,
-        // Garante que a conversão de data só ocorra se o valor existir
         consecrationDate: initialData.consecrationDate ? new Date(initialData.consecrationDate).toISOString().split('T')[0] : undefined,
       });
     }
@@ -43,7 +41,6 @@ const MinisterForm: React.FC<MinisterFormProps> = ({ initialData, onSubmit, onCa
   const handleFormSubmit: SubmitHandler<MinisterRequestDTO> = (data) => {
     const finalData = {
       ...data,
-      // Converte os IDs para number, já que eles vêm como string do formulário
       idMember: Number(data.idMember),
       idChurch: Number(data.idChurch),
     };
@@ -58,7 +55,6 @@ const MinisterForm: React.FC<MinisterFormProps> = ({ initialData, onSubmit, onCa
           id="idMember"
           {...register('idMember', { required: 'É necessário selecionar um membro' })}
           className={`form-select ${errors.idMember ? 'is-invalid' : ''}`}
-          // Desabilita o select no modo de edição
           disabled={!!initialData?.idMember}
         >
           <option value="">Selecione...</option>

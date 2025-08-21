@@ -1,6 +1,8 @@
 import { api } from '../api';
 import { AxiosError } from 'axios';
 import { MinisterialPosition } from '../../enums/MinisterialPosition';
+import { generateDocument } from '../document/DocumentService';
+import { DocumentRequestDTO, DocumentType } from '../../types/document/Document'
 
 // Interfaces para os DTOs do back-end
 export interface MeetingRequestDTO {
@@ -84,10 +86,16 @@ export const deleteMeeting = async (id: number): Promise<void> => {
 
 export const downloadMeetingReport = async (id: number): Promise<void> => {
     try {
-        const response = await api.get(`/meetings/${id}/download`, {
-            responseType: 'blob', // <-- Importante para receber o arquivo
-        });
-        
+        // 1. Cria a DTO genérica para o relatório de reunião
+        const documentData: DocumentRequestDTO = {
+            documentType: 'MEETING_REPORT' as DocumentType,
+            details: { meetingId: id.toString() }
+        };
+
+        // 2. Chama o serviço genérico de geração de documentos
+        const response = await generateDocument(documentData);
+
+        // 3. O restante da sua lógica para baixar o arquivo continua a mesma
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
@@ -97,7 +105,7 @@ export const downloadMeetingReport = async (id: number): Promise<void> => {
         link.remove();
         window.URL.revokeObjectURL(url);
 
-    } catch {
+    } catch  {
         throw new Error('Falha ao baixar o relatório da reunião.');
     }
 };
