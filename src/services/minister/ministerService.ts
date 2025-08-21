@@ -4,11 +4,24 @@ import type { Minister } from '../../types/minister/Minister';
 import type { MinisterialPosition } from '../../enums/MinisterialPosition';
 
 export interface MinisterRequestDTO {
-  position: MinisterialPosition;
-  consecrationDate: string;
+  position?: MinisterialPosition;
+  consecrationDate?: string;
   idMember: number;
   idChurch: number;
 }
+
+export interface MinisterInfo {
+    id: number;
+    fullName: string;
+    cpf: string;
+    telephone: string;
+    consecrationDate: string;
+    idChurch: number;
+    churchName: string;
+    churchTradeName: string;
+    position: MinisterialPosition;
+}
+
 interface ApiErrorResponse {
     message: string;
 }

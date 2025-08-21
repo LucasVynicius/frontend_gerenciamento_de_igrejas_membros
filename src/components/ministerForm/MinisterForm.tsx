@@ -1,58 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import type { MinisterRequestDTO } from '../../services/minister/ministerService';
 import type { Member } from '../../types/member/Member';
 import type { Church } from '../../types/church/Church';
-import { getMembers } from '../../services/member/memberService';
-import { getChurches } from '../../services/church/ChurchService';
 import { MinisterialPosition } from '../../enums/MinisterialPosition';
 import { translatePosition } from '../../utils/translations';
-import type { Minister } from '../../types/minister/Minister';
-import './MinisterForm.css'
+import './MinisterForm.css';
+
+type MinisterFormInitialData = {
+  idMember?: number;
+  idChurch?: number;
+  position?: MinisterialPosition;
+  consecrationDate?: string;
+};
 
 interface MinisterFormProps {
-  initialData?: Minister | null;
+  initialData?: MinisterFormInitialData;
   onSubmit: (data: MinisterRequestDTO) => void;
   onCancel: () => void;
   isSubmitting: boolean;
+  members: Member[]; // Recebe a lista de membros por prop
+  churches: Church[]; // Recebe a lista de igrejas por prop
 }
 
-const MinisterForm: React.FC<MinisterFormProps> = ({ initialData, onSubmit, onCancel, isSubmitting }) => {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [churches, setChurches] = useState<Church[]>([]);
-  
+const MinisterForm: React.FC<MinisterFormProps> = ({ initialData, onSubmit, onCancel, isSubmitting, members, churches, }) => {
+
   const { handleSubmit, formState: { errors }, register, reset } = useForm<MinisterRequestDTO>();
 
-  // Efeito para buscar os dados dos selects
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [memberData, churchData] = await Promise.all([getMembers(), getChurches()]);
-        setMembers(memberData);
-        setChurches(churchData);
-      } catch (error) {
-        console.error("Falha ao buscar dados para o formulário:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
-
-  useEffect(() => {
-
-    if (initialData && members.length > 0 && churches.length > 0) {
+    if (initialData) {
+      // Usa `reset` com dados padrão e os dados iniciais, se existirem
       reset({
         idMember: initialData.idMember,
         idChurch: initialData.idChurch,
         position: initialData.position,
-        consecrationDate: new Date(initialData.consecrationDate).toISOString().split('T')[0]
+        // Garante que a conversão de data só ocorra se o valor existir
+        consecrationDate: initialData.consecrationDate ? new Date(initialData.consecrationDate).toISOString().split('T')[0] : undefined,
       });
     }
-  }, [initialData, members, churches, reset]); 
+  }, [initialData, reset]);
 
   const handleFormSubmit: SubmitHandler<MinisterRequestDTO> = (data) => {
     const finalData = {
       ...data,
+      // Converte os IDs para number, já que eles vêm como string do formulário
       idMember: Number(data.idMember),
       idChurch: Number(data.idChurch),
     };
@@ -67,7 +58,8 @@ const MinisterForm: React.FC<MinisterFormProps> = ({ initialData, onSubmit, onCa
           id="idMember"
           {...register('idMember', { required: 'É necessário selecionar um membro' })}
           className={`form-select ${errors.idMember ? 'is-invalid' : ''}`}
-          disabled={!!initialData}
+          // Desabilita o select no modo de edição
+          disabled={!!initialData?.idMember}
         >
           <option value="">Selecione...</option>
           {members.map(member => (
@@ -106,6 +98,7 @@ const MinisterForm: React.FC<MinisterFormProps> = ({ initialData, onSubmit, onCa
             <option key={pos} value={pos}>{translatePosition(pos)}</option>
           ))}
         </select>
+        {errors.position && <div className="invalid-feedback">{errors.position.message}</div>}
       </div>
 
       <div className="mb-3">

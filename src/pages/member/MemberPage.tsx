@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { consecrateMinister, MinisterRequestDTO } from '../../services/minister/ministerService';
 import useAuth from '../../context/useAuth';
 import { Role } from '../../enums/Role';
 import Modal from '../../components/Modal';
@@ -11,7 +12,6 @@ import { getMemberCredential } from '../../services/credential/CredentialService
 import { generateDocument } from '../../services/document/DocumentService';
 import MinisterForm from '../../components/ministerForm/MinisterForm';
 
-import type { Minister } from '../../types/minister/Minister';
 import type { DocumentRequestDTO, DocumentType } from '../../types/document/Document';
 import type { Member, MemberRequestDTO, MemberUpdateRequestDTO } from '../../types/member/Member';
 import type { Church } from '../../types/church/Church';
@@ -193,9 +193,10 @@ const MemberPage: React.FC = () => {
     }
   }, [selectedMember, selectedDocumentType, documentPurpose, closeModal, handleShowInfoModal]);
 
-  const handleConsecrationSubmit = useCallback(async (data: Minister) => {
+  const handleConsecrationSubmit = useCallback(async (data: MinisterRequestDTO) => {
     setIsSubmitting(true);
     try {
+      // A chamada ao serviço agora usa os dados do tipo correto
       await consecrateMinister(data);
       handleShowInfoModal('Sucesso!', 'Membro consagrado a Ministro com sucesso!');
       closeModal();
@@ -368,24 +369,29 @@ const MemberPage: React.FC = () => {
         </Modal>
       )}
 
+
       {selectedMember && (
-    <Modal
-        isOpen={modalType === 'consecrate'}
-        onClose={closeModal}
-        title={`Consagrar ${selectedMember.fullName} a Ministro`}
-    >
-        <MinisterForm
-            onSubmit={handleConsecrationSubmit} // <-- Chama a nova função
+        <Modal
+          isOpen={modalType === 'consecrate'}
+          onClose={closeModal}
+          title={`Consagrar ${selectedMember.fullName} a Ministro`}
+        >
+          <MinisterForm
+            onSubmit={handleConsecrationSubmit}
             onCancel={closeModal}
             isSubmitting={isSubmitting}
-            initialData={{ 
-                memberId: selectedMember.id, // <-- Passa o ID do membro
-                fullName: selectedMember.fullName,
-                churchId: selectedMember.churchId, // <-- Passa o ID da igreja
+            initialData={{
+              idMember: selectedMember.id,
+              idChurch: selectedMember.idChurch,
+              position: undefined,
+              consecrationDate: undefined,
             }}
-        />
-    </Modal>
-)}
+            // ADICIONE ESSAS DUAS PROPS
+            members={members}
+            churches={churches}
+          />
+        </Modal>
+      )}
 
 
       <Modal isOpen={modalType === 'info'} onClose={closeModal} title={modalContent.title}>

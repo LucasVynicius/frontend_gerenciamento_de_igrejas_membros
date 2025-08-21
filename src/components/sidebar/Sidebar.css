@@ -1,7 +1,7 @@
 
 .sidebar {
   width: 220px;
-  background-color: #4a148c; /* Cor de fundo roxa/lilás */
+  background-color: #000000; /* Cor de fundo roxa/lilás */
   color: #fff;
   display: flex;
   flex-direction: column;
