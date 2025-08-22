@@ -1,63 +1,59 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { register } from '../services/authService';
+import { register, RegisterRequest } from '../services/authService';
+
 import { Modal } from '../components';
 
-interface RegisterRequest {
-    username: string;
-    email: string;
-    password: string;
-    role: 'ADMIN' | 'SECRETARY';
-}
-
 interface ModalContent {
-    title: string;
-    message: string;
-    type?: 'success' | 'error' | 'info';
+  title: string;
+  message: string;
+  type?: 'success' | 'error' | 'info';
 }
 
 const RegisterPage = () => {
-    const [username, setUsername] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [role, setRole] = useState<'ADMIN' | 'SECRETARY' | ''>('');
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [modalContent, setModalContent] = useState<ModalContent>({
-        title: '',
-        message: '',
-        type: 'info'
-    });
-    const navigate = useNavigate();
+  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [role, setRole] = useState<'ADMIN' | 'SECRETARY' | ''>('');
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [modalContent, setModalContent] = useState<ModalContent>({
+    title: '',
+    message: '',
+    type: 'info'
+  });
+  const navigate = useNavigate();
 
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const userData: RegisterRequest = { username, email, password, role: role as 'ADMIN' | 'SECRETARY' };
-            await register(userData);
-            setModalContent({
-                title: 'Registro bem-sucedido',
-                message: 'Usuário registrado com sucesso. Você será redirecionado para a página de login.',
-                type: 'success'
-            });
-            setIsModalOpen(true);
-            navigate('/');
-        }
-        catch (error: unknown) {
-            const errorMessage = (error as Error).message || 'Erro ao registrar usuário. Verifique os dados informados.';
-            setModalContent({
-                title: 'Erro ao registrar',
-                message: errorMessage,
-                type: 'error'
-            });
-            setIsModalOpen(true);
-        }
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const userData: RegisterRequest = { username, email, password, role: role as 'ADMIN' | 'SECRETARY', firstName, lastName };
+      await register(userData);
+      setModalContent({
+        title: 'Registro bem-sucedido',
+        message: 'Usuário registrado com sucesso. Você será redirecionado para a página de login.',
+        type: 'success'
+      });
+      setIsModalOpen(true);
+      navigate('/');
     }
+    catch (error: unknown) {
+      const errorMessage = (error as Error).message || 'Erro ao registrar usuário. Verifique os dados informados.';
+      setModalContent({
+        title: 'Erro ao registrar',
+        message: errorMessage,
+        type: 'error'
+      });
+      setIsModalOpen(true);
+    }
+  };
 
-    return (
+  const closeModal = () => {
+    setIsModalOpen(false);
+  }
+
+  return (
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
@@ -65,6 +61,14 @@ const RegisterPage = () => {
             <h5 className="card-header text-center">Registrar</h5>
             <div className="card-body">
               <form onSubmit={handleRegister}>
+                <div className="mb-3">
+                  <label htmlFor="firstName" className="form-label">Primeiro Nome</label>
+                  <input type="text" className="form-control" id="firstName" value={firstName} onChange={e => setFirstName(e.target.value)} required />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="lastName" className="form-label">Último Nome</label>
+                  <input type="text" className="form-control" id="lastName" value={lastName} onChange={e => setLastName(e.target.value)} required />
+                </div>
                 <div className="mb-3">
                   <label htmlFor="username" className="form-label">Nome de Usuário</label>
                   <input type="text" className="form-control" id="username" value={username} onChange={e => setUsername(e.target.value)} required />

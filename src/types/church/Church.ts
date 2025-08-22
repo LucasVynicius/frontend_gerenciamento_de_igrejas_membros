@@ -8,7 +8,7 @@ export interface Church {
   registryNumber: string;
   city: string;
   country: string;
-  foundationDate: string; // Vem como string, podemos formatar depois
+  foundationDate: string; 
   pastorLocalId: number | null;
   pastorLocalName: string | null;
   address: AddressDTO

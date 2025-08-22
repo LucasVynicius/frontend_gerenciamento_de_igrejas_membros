@@ -75,7 +75,7 @@ const ChurchPage: React.FC = () => {
         if (!selectedChurch) return;
         setIsSubmitting(true);
         try {
-            await deleteChurch(selectedChurch.id);
+            await deleteChurch(selectedChurch.id.toString());
             handleShowInfoModal('Sucesso!', 'Igreja excluída com sucesso!');
             closeModal();
             fetchPageData();

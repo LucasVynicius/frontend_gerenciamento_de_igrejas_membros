@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { getAllRoles, getAllPermissions, updateRolePermissions } from '../../services/permission/permissionService';
 import { getAllUsers } from '../../services/user/userService';
 import { UserInfo } from '../../services/user/userService';
-import { RoleResponseDTO, PermissionResponseDTO } from '../../types/permission/permission';
-import Modal from '../../components/Modal'; // Assumindo que você tem um componente Modal
+import { RoleResponseDTO, PermissionResponseDTO } from '../../services/permission/permissionService';
+import Modal from '../../components/Modal'; 
 import { FaEdit } from 'react-icons/fa';
 import './PermissionPage.css';
 

@@ -1,10 +1,6 @@
 import { api } from '../api';
 import { AxiosError } from 'axios';
-import { UserInfo } from '../user/userService'; // Importe seu DTO de usuário
-
-
-
-
+import { UserInfo } from '../user/userService'; 
 
 export interface PermissionResponseDTO {
     id: number;

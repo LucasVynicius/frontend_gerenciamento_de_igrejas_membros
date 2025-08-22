@@ -5,7 +5,6 @@ import axios from 'axios';
 import type { Church } from '../../types/church/Church';
 import { RegistryType } from '../../enums/RegistryType'; // Importa a busca de ministros
 import type { Minister } from '../../types/minister/Minister';
-import type { AddressDTO } from '../../types/address/Address';
 import './ChurchForm.css';
 
 interface ChurchFormProps {
@@ -20,31 +19,21 @@ const ChurchForm: React.FC<ChurchFormProps> = ({ initialData, onSubmit, onCancel
 
     const { control, handleSubmit, formState: { errors }, setValue, register, reset } = useForm<Church>();
 
-    useEffect(() => {
+     useEffect(() => {
         if (initialData) {
-
-            const formData: Church = {
-                id: initialData.id ?? '', // ou initialData.id ?? 0, dependendo do tipo do id
-                name: initialData.name ?? '',
-                tradeName: initialData.tradeName ?? '',
-                registryType: initialData.registryType ?? RegistryType.CNPJ,
-                registryNumber: initialData.registryNumber ?? '',
-                foundationDate: initialData.foundationDate ? new Date(initialData.foundationDate).toISOString().split('T')[0] : '',
-                pastorLocalId: initialData.pastorLocalId ? Number(initialData.pastorLocalId) : null,
-                pastorLocalName: initialData.pastorLocalName ?? '',
-                address: initialData.address ?? {} as AddressDTO,
-                city: initialData.city ?? '',
-                country: initialData.country ?? '',
-            };
-
-            reset(formData);
-        } else {
-
+            // A forma mais simples: resete o formulário diretamente com os dados iniciais
             reset({
-                registryType: RegistryType.CNPJ
+                ...initialData, // Usa o operador spread para copiar as propriedades
+                // Garante que o formato da data é o esperado pelo campo input
+                foundationDate: initialData.foundationDate 
+                                  ? new Date(initialData.foundationDate).toISOString().split('T')[0] 
+                                  : '',
+                // Garante que o pastorLocalId seja um número ou null
+                pastorLocalId: initialData.pastorLocalId ? Number(initialData.pastorLocalId) : null,
+                // O react-hook-form lida com os outros campos automaticamente
             });
         }
-    }, []);
+    }, [initialData, reset]);
 
     const handleCepBlur = async (event: React.FocusEvent<HTMLInputElement>) => {
         const cep = event.target.value.replace(/\D/g, '');
