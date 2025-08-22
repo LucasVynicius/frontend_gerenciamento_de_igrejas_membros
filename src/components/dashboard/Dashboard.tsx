@@ -22,9 +22,11 @@ const Dashboard: React.FC = () => {
                 <DashboardCard icon={<FaChurch />} title="Gerenciamento de Igrejas" link="/igrejas" />
                 <DashboardCard icon={<FaUsers />} title="Gerenciamento de Membros" link="/membros" />
                 <DashboardCard icon={<FaUserGraduate />} title="Ministros" link="/ministros" />
-                <DashboardCard icon={<FaLock />} title="Permissões" link="/permissoes" />
                 <DashboardCard icon={<FaFileAlt />} title="Relatórios" link="/relatorios" />
                 <DashboardCard icon={<FaFileAlt />} title="Oficios" link="/oficios" />
+                {user?.role === 'ADMIN' && (
+                    <DashboardCard icon={<FaLock />} title="Permissões" link="/permissoes" />
+                )}
                 {user?.role === 'ADMIN' && (
                     <DashboardCard icon={<FaUserCog />} title="Gerenciar Usuários" link="/admin/users" />
                 )}
