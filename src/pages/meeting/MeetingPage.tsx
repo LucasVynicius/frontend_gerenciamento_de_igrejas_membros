@@ -7,7 +7,7 @@ import Modal from '../../components/Modal';
 import MeetingForm from '../../components/meetingForm/MeetingForm';
 import { FaPlus, FaEdit, FaTrashAlt, FaFilePdf } from 'react-icons/fa';
 
-import './MeetingReportsPage.css';
+import './MeetingPage.css';
 
 const MeetingReportsPage: React.FC = () => {
     const [meetings, setMeetings] = useState<MeetingResponseDTO[]>([]);
