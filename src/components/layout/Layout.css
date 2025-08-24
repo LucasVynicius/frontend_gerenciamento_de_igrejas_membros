@@ -1,19 +1,29 @@
-/* Controla o container principal que divide a tela em duas */
+/* ===== ESTILOS PARA TELAS MÓVEIS (Mobile-First) ===== */
 .layout-container {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f4f7f6; /* Um cinza bem claro para o fundo */
+    display: flex;
+    flex-direction: column; /* Em telas pequenas, a sidebar e o conteúdo ficam empilhados */
+    min-height: 100vh;
+    background-color: #f4f7f6;
 }
 
-/* Define a área de conteúdo principal, que cresce para ocupar o espaço */
 .main-content {
-  flex-grow: 1; /* Faz esta div ocupar todo o espaço restante */
-  display: flex;
-  flex-direction: column;
+    flex-grow: 1; /* Ocupa todo o espaço restante */
+    display: flex;
+    flex-direction: column;
 }
 
-/* Onde o conteúdo de cada página (Dashboard, Membros, etc.) será renderizado */
 .page-content {
-  padding: 2rem;
-  overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
+    padding: 1rem; /* Padding menor para não "esmagar" o conteúdo em telas pequenas */
+    overflow-y: auto;
+}
+
+/* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
+@media (min-width: 768px) {
+    .layout-container {
+        flex-direction: row; /* Alinha a sidebar e o conteúdo lado a lado em telas maiores */
+    }
+
+    .page-content {
+        padding: 2rem; /* Aumenta o padding em telas maiores para melhor visualização */
+    }
 }

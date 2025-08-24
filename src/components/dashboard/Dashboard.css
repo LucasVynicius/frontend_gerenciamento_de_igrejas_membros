@@ -1,11 +1,11 @@
-
+/* ===== ESTILOS PARA TELAS MÓVEIS (Mobile-First) ===== */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+    /* Em telas pequenas, a grid terá apenas uma coluna */
+    grid-template-columns: 1fr;
     gap: 20px;
     padding: 20px 0;
 }
-
 
 .dashboard-card {
     background-color: #ffffff;
@@ -28,9 +28,10 @@
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
-.card-icon {    
-    color: #4b0082; 
-    font-size: 2.5rem; 
+
+.card-icon {
+    color: #4b0082;
+    font-size: 2.5rem;
     margin-bottom: 10px;
 }
 
@@ -41,28 +42,22 @@
     color: #333;
 }
 
-
 .dashboard-card.locked {
     opacity: 0.6;
     cursor: not-allowed;
-    pointer-events: none; 
+    pointer-events: none;
 }
 
 .locked .card-icon {
     color: #999;
 }
 
-@media (max-width: 768px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    /* Em telas pequenas, a grid também terá apenas uma coluna */
+    grid-template-columns: 1fr;
     gap: 20px;
-    margin-bottom: 40px; /* Espaço entre os stats e a navegação */
+    margin-bottom: 40px;
 }
 
 .stat-card {
@@ -98,14 +93,48 @@
     font-size: 0.9rem;
 }
 
-.stat-card.members { border-color: #0d6efd; }
-.stat-card.members .stat-icon { background-color: #0d6efd; }
+.stat-card.members {
+    border-color: #0d6efd;
+}
 
-.stat-card.ministers { border-color: #198754; }
-.stat-card.ministers .stat-icon { background-color: #198754; }
+.stat-card.members .stat-icon {
+    background-color: #0d6efd;
+}
 
-.stat-card.leaders { border-color: #ffc107; }
-.stat-card.leaders .stat-icon { background-color: #ffc107; }
+.stat-card.ministers {
+    border-color: #198754;
+}
 
-.stat-card.churches { border-color: #dc3545; }
-.stat-card.churches .stat-icon { background-color: #dc3545; }
+.stat-card.ministers .stat-icon {
+    background-color: #198754;
+}
+
+.stat-card.leaders {
+    border-color: #ffc107;
+}
+
+.stat-card.leaders .stat-icon {
+    background-color: #ffc107;
+}
+
+.stat-card.churches {
+    border-color: #dc3545;
+}
+
+.stat-card.churches .stat-icon {
+    background-color: #dc3545;
+}
+
+
+/* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
+@media (min-width: 768px) {
+    .dashboard-grid {
+        /* Em telas maiores, a grid se adapta com 220px por coluna */
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+
+    .stats-grid {
+        /* Em telas maiores, a grid se adapta com 200px por coluna */
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}

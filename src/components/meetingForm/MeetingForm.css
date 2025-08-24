@@ -1,10 +1,10 @@
 /* ===== ESTILOS GERAIS PARA MOBILE (Mobile-First) ===== */
-.member-form * {
+.meeting-form * {
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.member-form {
+.meeting-form {
     background: #fff;
     padding: 20px;
     border-radius: 12px;
@@ -12,16 +12,14 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
-/* ===== TÍTULOS ===== */
-.member-form h5 {
+.meeting-form h5 {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 15px;
     color: #222;
 }
 
-/* ===== LABELS ===== */
-.member-form .form-label {
+.meeting-form .form-label {
     font-weight: 500;
     margin-bottom: 6px;
     color: #555;
@@ -29,9 +27,8 @@
     font-size: 0.9rem;
 }
 
-/* ===== INPUTS, SELECTS E TEXTAREAS ===== */
-.member-form .form-control,
-.member-form .form-select {
+.meeting-form .form-control,
+.meeting-form .form-select {
     width: 100%;
     padding: 10px 14px;
     font-size: 0.95rem;
@@ -42,46 +39,42 @@
     transition: all 0.2s ease-in-out;
 }
 
-.member-form .form-control:focus,
-.member-form .form-select:focus {
+.meeting-form .form-control:focus,
+.meeting-form .form-select:focus {
     border-color: #0077ff;
     box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.15);
     outline: none;
 }
 
-/* ===== CAMPOS COM ERRO ===== */
-.member-form .is-invalid {
+.meeting-form .is-invalid {
     border-color: #dc3545 !important;
 }
 
-.member-form .invalid-feedback {
+.meeting-form .invalid-feedback {
     color: #dc3545;
     font-size: 0.85rem;
     margin-top: 4px;
 }
 
-/* ===== CHECKBOX ===== */
-.member-form .form-check {
+.meeting-form .form-check {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.member-form .form-check-input {
+.meeting-form .form-check-input {
     width: 18px;
     height: 18px;
     cursor: pointer;
 }
 
-/* ===== BARRA DIVISÓRIA ===== */
-.member-form hr {
+.meeting-form hr {
     border: none;
     border-top: 1px solid #e0e0e0;
     margin: 20px 0;
 }
 
-/* ===== BOTÕES ===== */
-.member-form .btn {
+.meeting-form .btn {
     padding: 10px 18px;
     border-radius: 8px;
     font-weight: 600;
@@ -91,53 +84,51 @@
     width: 100%;
 }
 
-.member-form .modal-footer {
+.meeting-form .modal-footer {
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-top: 20px;
 }
 
-/* Botão Salvar */
-.member-form .btn-primary {
+.meeting-form .btn-primary {
     background-color: #0077ff;
     border: none;
     color: #fff;
 }
 
-.member-form .btn-primary:hover {
+.meeting-form .btn-primary:hover {
     background-color: #005fd1;
 }
 
-/* Botão Cancelar */
-.member-form .btn-secondary {
+.meeting-form .btn-secondary {
     background-color: #dc3545;
     border: none;
     color: #fff;
 }
 
-.member-form .btn-secondary:hover {
+.meeting-form .btn-secondary:hover {
     background-color: #b52a37;
 }
 
-/* ===== RESPONSIVIDADE PARA TELAS MAIORES QUE 768PX ===== */
+/* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
 @media (min-width: 768px) {
-    .member-form {
+    .meeting-form {
         padding: 25px;
         max-width: 600px;
         margin: 20px auto;
     }
 
-    .member-form h5 {
+    .meeting-form h5 {
         font-size: 1.2rem;
     }
 
-    .member-form .modal-footer {
+    .meeting-form .modal-footer {
         flex-direction: row;
         justify-content: flex-end;
     }
     
-    .member-form .btn {
+    .meeting-form .btn {
         width: auto;
     }
 }

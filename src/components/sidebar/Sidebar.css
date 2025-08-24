@@ -1,18 +1,45 @@
-
+/* ===== ESTILOS GERAIS PARA MOBILE (Mobile-First) ===== */
 .sidebar {
-  width: 220px;
-  background-color: #000000; /* Cor de fundo roxa/lilás */
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Espaço entre o header, nav e footer */
-  padding: 1.5rem 0;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Fixa a posição para que ela possa ser ocultada */
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Garante que fique por cima de outros elementos */
+    width: 280px; /* Largura um pouco maior para mobile */
+    height: 100vh;
+    background-color: #000000;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transform: translateX(-100%); /* Esconde a sidebar por padrão */
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.open {
+    transform: translateX(0); /* Mostra a sidebar quando a classe 'open' é adicionada */
+}
+
+/* Opcional: Adiciona um overlay escuro quando a sidebar está aberta */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+
+.sidebar.open + .sidebar-overlay {
+    display: block;
 }
 
 .sidebar-header {
-  text-align: center;
-  margin-bottom: 40px;
+    text-align: center;
+    margin-bottom: 40px;
 }
 
 .sidebar-logo {
@@ -21,51 +48,61 @@
 }
 
 .sidebar-nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .sidebar-nav li {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .nav-item {
-  display: flex;
-  align-items: center;
-  padding: 10px 15px;
-  border-radius: 8px;
-  color: #fff;
-  text-decoration: none;
-  transition: background-color 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: #fff;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out;
 }
 
 .nav-item svg {
-  margin-right: 15px;
-  font-size: 1.2rem;
+    margin-right: 15px;
+    font-size: 1.2rem;
 }
 
 .nav-item:hover,
 .nav-item.active {
-  background-color: #5c6bc0;
-  text-decoration: none;
+    background-color: #5c6bc0;
+    text-decoration: none;
 }
 
 .sidebar-footer {
-  text-align: center;
+    text-align: center;
 }
 
 .logout-btn {
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  padding: 10px 15px;
-  width: 100%;
-  text-align: left;
-  transition: background-color 0.3s ease-in-out;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 15px;
+    width: 100%;
+    text-align: left;
+    transition: background-color 0.3s ease-in-out;
 }
 
 .logout-btn:hover {
-  background-color: #5c6bc0;
+    background-color: #5c6bc0;
+}
+
+/* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
+@media (min-width: 768px) {
+    .sidebar {
+        position: static; /* Volta para a posição estática */
+        transform: translateX(0); /* Garante que ela esteja sempre visível */
+        width: 220px;
+        height: auto;
+    }
 }
