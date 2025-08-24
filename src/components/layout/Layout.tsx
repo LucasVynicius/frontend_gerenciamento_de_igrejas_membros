@@ -1,22 +1,29 @@
-// Em: src/components/layout/Layout.tsx
+import React, { useState } from 'react';
+import Sidebar from '../sidebar/Sidebar'; 
+import { FaBars } from 'react-icons/fa';
 
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Sidebar from '../sidebar/Sidebar'; // Verifique se o caminho para sua sidebar está correto
-import './Layout.css';
+interface LayoutProps {
+    children: React.ReactNode;
+}
 
-const Layout: React.FC = () => {
-  return (
-    <div className="layout-container">
-      <Sidebar />
-      <div className="main-content">
-        <main className="page-content">
-          {/* O Outlet é o espaço onde o conteúdo da sua rota (Dashboard, MemberPage, etc.) será renderizado */}
-          <Outlet />
-        </main>
-      </div>
-    </div>
-  );
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    return (
+        <div className="layout-container">
+            <button className="hamburger-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                <FaBars />
+            </button>
+            
+            <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+
+            {isSidebarOpen && <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>}
+            
+            <main className="main-content">
+                {children}
+            </main>
+        </div>
+    );
 };
 
 export default Layout;
