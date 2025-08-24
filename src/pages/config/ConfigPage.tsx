@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom'; 
 import { getChurchById, updateChurch } from '../../services/church/ChurchService'; 
 import type { Church } from '../../types/church/Church';
+import './ConfigPage.css';
 
 const ConfigPage: React.FC = () => {
     // Pegamos o parâmetro 'id' que vem da URL
