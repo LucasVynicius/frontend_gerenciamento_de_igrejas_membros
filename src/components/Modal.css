@@ -1,5 +1,4 @@
-/* src/components/Modal.css */
-
+/* ===== ESTILOS PARA TELAS MÓVEIS (Mobile-First) ===== */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -18,8 +17,9 @@
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     padding: 24px;
-    width: 90%;
-    max-width: 600px;
+    width: 95%; /* Largura maior para mobile */
+    max-width: none;
+    margin: 10px; /* Margem para evitar que o modal toque as bordas */
     position: relative;
     max-height: 90vh;
     overflow-y: auto;
@@ -35,7 +35,7 @@
 }
 
 .modal-title {
-    font-size: 1.5rem;
+    font-size: 1.2rem; /* Fonte menor para mobile */
     font-weight: 600;
     margin: 0;
 }
@@ -69,11 +69,16 @@
 .modal-success .modal-title { color: #28a745; }
 .modal-error .modal-title { color: #dc3545; }
 
-/* Media queries para o modal */
-@media (max-width: 768px) {
+
+/* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
+@media (min-width: 768px) {
     .modal-content {
-        width: 95%;
-        max-width: none;
-        margin: 10px;
+        width: 90%;
+        max-width: 600px; /* Limita a largura em telas maiores */
+        margin: auto;
+    }
+    
+    .modal-title {
+        font-size: 1.5rem; /* Aumenta a fonte para telas maiores */
     }
 }

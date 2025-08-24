@@ -27,7 +27,7 @@
 }
 
 .btn-add {
-    background-color: #28a745;
+    background-color: #007bff;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -39,53 +39,47 @@
 }
 
 .btn-add:hover {
-    background-color: #218838;
+    background-color: #0069d9;
 }
 
 /* Container da Tabela */
 .table-container {
-    overflow-x: auto;
+    overflow-x: auto; /* Adiciona scroll horizontal se a tabela for muito larga */
 }
 
-.roles-table,
-.users-table {
+.table-container table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     background-color: #fff;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    min-width: 600px;
-    margin-bottom: 2rem;
+    min-width: 600px; /* Garante que a tabela não fique espremida */
 }
 
-.roles-table th, .roles-table td,
-.users-table th, .users-table td {
-    padding: 12px 8px;
+.table-container th, .table-container td {
+    padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
-.roles-table th,
-.users-table th {
+.table-container th {
     background-color: #f2f2f2;
     font-weight: 600;
     color: #333;
 }
 
-.roles-table tbody tr:hover,
-.users-table tbody tr:hover {
+.table-container tbody tr:hover {
     background-color: #f5f5f5;
 }
 
 .actions-cell {
     display: flex;
-    gap: 4px;
-    white-space: nowrap;
+    gap: 8px;
 }
 
 .actions-cell .btn {
-    padding: 6px;
-    font-size: 0.9rem;
+    padding: 8px;
+    font-size: 1rem;
     border-radius: 4px;
     cursor: pointer;
     border: none;
@@ -94,19 +88,11 @@
 
 .btn-info { background-color: #17a2b8; color: #fff; }
 .btn-info:hover { background-color: #138496; }
-.btn-primary { background-color: #0d6efd; color: #fff; }
-.btn-primary:hover { background-color: #0b5ed7; }
-.btn-danger { background-color: #dc3545; color: #fff; }
-.btn-danger:hover { background-color: #c82333; }
 .btn-warning { background-color: #ffc107; color: #333; }
 .btn-warning:hover { background-color: #e0a800; }
+.btn-danger { background-color: #dc3545; color: #fff; }
+.btn-danger:hover { background-color: #c82333; }
 
-.loading-message {
-    text-align: center;
-    padding: 2rem;
-    font-size: 1.2rem;
-    color: #6c757d;
-}
 
 /* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
 @media (min-width: 768px) {
@@ -119,31 +105,16 @@
         justify-content: space-between;
         align-items: center;
     }
-    
+
     .page-actions {
         justify-content: flex-end;
     }
-
+    
     .btn-add {
         width: auto;
     }
 
-    .roles-table,
-    .users-table {
-        font-size: 0.9rem;
-        min-width: auto;
-    }
-
-    .roles-table th, .roles-table td,
-    .users-table th, .users-table td {
-        padding: 12px 15px;
-    }
-
-    .actions-cell {
-        gap: 8px;
-    }
-
-    .actions-cell .btn {
-        padding: 8px;
+    .table-container table {
+        min-width: auto; /* Permite que a tabela se adapte a 100% da largura disponível */
     }
 }

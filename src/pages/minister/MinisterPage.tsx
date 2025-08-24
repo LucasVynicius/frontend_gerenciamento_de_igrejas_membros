@@ -19,6 +19,7 @@ import { generateDocument } from '../../services/document/DocumentService';
 import type { DocumentRequestDTO, DocumentType } from '../../types/document/Document';
 import { getMinisterCredential } from '../../services/credential/CredentialService';
 import { useReactToPrint } from 'react-to-print';
+import "./MinisterPage.css"
 
 const MinisterPage: React.FC = () => {
     const [ministers, setMinisters] = useState<Minister[]>([]);

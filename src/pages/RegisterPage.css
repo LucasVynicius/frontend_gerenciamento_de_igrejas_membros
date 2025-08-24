@@ -50,7 +50,7 @@
     color: #333;
 }
 
-.login-form input {
+.login-form input, .login-form select {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid #b0c4de;
@@ -59,7 +59,7 @@
     transition: all 0.2s;
 }
 
-.login-form input:focus {
+.login-form input:focus, .login-form select:focus {
     outline: none;
     border-color: #4682b4;
     box-shadow: 0 0 4px rgba(70, 130, 180, 0.3);
@@ -90,4 +90,11 @@
     margin-bottom: 1rem;
     border-radius: 8px;
     font-size: 0.9rem;
+}
+
+/* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
+@media (min-width: 768px) {
+    .login-container {
+        padding: 3rem;
+    }
 }

@@ -7,6 +7,7 @@ import UserForm from '../../components/user/UserForm';
 import { FaUserPlus, FaToggleOn, FaToggleOff, FaTrashAlt, FaKey, FaEdit } from 'react-icons/fa';
 import { Role } from '../../enums/Role';
 import { useUserMutations } from '../../hooks/useUserMutations';
+import "./AdminUserPage.css"
 
 const AdminUserPage: React.FC = () => {
     const [users, setUsers] = useState<UserInfo[]>([]);

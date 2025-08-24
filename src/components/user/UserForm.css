@@ -1,90 +1,95 @@
+/* ===== ESTILOS GERAIS PARA TELAS MÓVEIS (Mobile-First) ===== */
 form {
-  max-width: 500px;
-  margin: auto;
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
-  font-family: 'Segoe UI', Tahoma, sans-serif;
+    max-width: 100%; /* Ocupa a largura total em mobile */
+    margin: auto;
+    background: #fff;
+    padding: 1rem; /* Padding ajustado para mobile */
+    border-radius: 12px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
 .form-label {
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 0.3rem;
-  display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.3rem;
+    display: block;
 }
 
 .form-control,
 .form-select {
-  width: 100%;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid #b0c4de;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  transition: all 0.2s ease-in-out;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #b0c4de;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease-in-out;
 }
 
 .form-control:focus,
 .form-select:focus {
-  outline: none;
-  border-color: #4682b4;
-  box-shadow: 0 0 4px rgba(70, 130, 180, 0.3);
+    outline: none;
+    border-color: #4682b4;
+    box-shadow: 0 0 4px rgba(70, 130, 180, 0.3);
 }
 
 .text-danger {
-  font-size: 0.85rem;
-  color: #dc3545;
-  margin-top: 0.2rem;
+    font-size: 0.85rem;
+    color: #dc3545;
+    margin-top: 0.2rem;
 }
 
+/* Rodapé do modal em telas pequenas */
 .modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.8rem;
-  margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column; /* Alinha os botões em coluna para mobile */
+    gap: 0.5rem; /* Espaço entre os botões */
+    margin-top: 1.5rem;
 }
 
 .btn {
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  border: none;
-  border-radius: 6px;
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    width: 100%; /* Botões com largura total para mobile */
 }
 
 .btn-primary {
-  background-color: #4682b4;
-  color: white;
+    background-color: #4682b4;
+    color: white;
 }
 
 .btn-primary:hover {
-  background-color: #36648b;
+    background-color: #36648b;
 }
 
 .btn-secondary {
-  background-color: #dc3545;
-  color: white;
+    background-color: #dc3545;
+    color: white;
 }
 
 .btn-secondary:hover {
-  background-color: #b52a38;
+    background-color: #b52a38;
 }
 
-/* Responsivo */
-@media (max-width: 576px) {
-  form {
-    padding: 1rem;
-  }
-  
-  .modal-footer {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .btn {
-    width: 100%;
-  }
+
+/* ===== ESTILOS PARA TELAS MAIORES QUE 576PX ===== */
+@media (min-width: 576px) {
+    form {
+        padding: 1.5rem; /* Volta ao padding original */
+    }
+    
+    .modal-footer {
+        flex-direction: row; /* Alinha os botões em linha para desktop */
+        justify-content: flex-end;
+        gap: 0.8rem;
+    }
+    
+    .btn {
+        width: auto; /* Deixa os botões com largura automática */
+    }
 }

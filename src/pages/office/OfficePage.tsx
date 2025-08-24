@@ -3,6 +3,7 @@ import axios from 'axios'; // Assumindo que você usa axios diretamente
 import { generateDocument } from '../../services/document/DocumentService';
 import type { DocumentRequestDTO, DocumentType,  } from '../../types/document/Document';
 import Modal from '../../components/Modal';
+import "./OfficePage.css"
 
 const OfficePage: React.FC = () => {
  

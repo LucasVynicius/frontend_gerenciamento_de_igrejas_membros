@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { register, RegisterRequest } from '../services/authService';
 
 import { Modal } from '../components';
+import "./RegisterPage.css";
 
 interface ModalContent {
   title: string;

@@ -6,6 +6,7 @@ import type { Minister } from '../../types/minister/Minister';
 import Modal from '../../components/Modal';
 import ChurchForm from '../../components/churchForm/ChurchForm';
 import { FaEdit, FaTrash, FaEye } from 'react-icons/fa';
+import "./ChurchPage.css"
 
 const ChurchPage: React.FC = () => {
     const [churches, setChurches] = useState<Church[]>([]);
