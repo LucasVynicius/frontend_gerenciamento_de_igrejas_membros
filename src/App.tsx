@@ -1,38 +1,20 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import useAuth from './context/useAuth';
-import  AuthProvider  from './providers/AuthProvicer';
+import  AuthProvider  from './providers/AuthProvider';
 
-import Layout from './components/layout/Layout';
+// Importe seus componentes
+import ProtectedLayout from './components/layout/ProtectedLayout';
 import Login from './pages/Login';
 import RegisterPage from './pages/RegisterPage';
-
-
-import Dashboard from './components/dashboard/Dashboard';
+import DashboardPage from './components/dashboard/Dashboard';
 import MemberPage from './pages/member/MemberPage';
 import ChurchPage from './pages/church/ChurchPage';
 import MinisterPage from './pages/minister/MinisterPage';
 import AdminUserPage from './pages/admin/AdminUserPage';
-import AdminRoute from './components/routes/AdminRoute';
+import AdminRoute from './components/routes/AdminRoute'; // Vamos refatorar este componente
 import OfficePage from './pages/office/OfficePage';
 import MeetingReportsPage from './pages/meeting/MeetingPage';
 import PermissionsPage from './pages/permission/PermissionsPage';
 import ConfigPage from './pages/config/ConfigPage';
-
-const ProtectedLayout = () => {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Carregando...</span>
-        </div>
-      </div>
-    );
-  }
-
-  return isAuthenticated ? <Layout /> : <Navigate to="/login" />;
-};
 
 function App() {
   return (
@@ -41,21 +23,22 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterPage />} />
+          
 
           <Route element={<ProtectedLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route index element={<DashboardPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/membros" element={<MemberPage />} />
             <Route path="/igrejas" element={<ChurchPage />} />
             <Route path="/ministros" element={<MinisterPage />} />
             <Route path="/oficios" element={<OfficePage />} />
-            <Route path='/relatorios' element={<MeetingReportsPage/>} />
-            <Route path='/permissoes' element={<PermissionsPage/>} />
-            <Route path='/configuracoes' element={<ConfigPage/>} />
+            <Route path="/relatorios" element={<MeetingReportsPage/>} />
+            <Route path="/permissoes" element={<PermissionsPage/>} />
+            <Route path="/configuracoes/:id" element={<ConfigPage/>} />
             <Route element={<AdminRoute />}>
-              <Route path="admin/users" element={<AdminUserPage />} />
+              <Route path="/admin/users" element={<AdminUserPage />} />
             </Route>
-            <Route path="*" element={<Navigate to="/login" />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Route>
         </Routes>
       </Router>
