@@ -1,29 +1,30 @@
-/* ===== ESTILOS PARA TELAS MÓVEIS (Mobile-First) ===== */
+/* ===== ESTILOS GERAIS PARA TELAS MÓVEIS (Mobile-First) ===== */
 .layout-container {
     display: flex;
-    flex-direction: column; /* Em telas pequenas, a sidebar e o conteúdo ficam empilhados */
+    flex-direction: column; /* Empilha o conteúdo em mobile */
     min-height: 100vh;
     background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .main-content {
-    flex-grow: 1; /* Ocupa todo o espaço restante */
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
 .page-content {
-    padding: 1rem; /* Padding menor para não "esmagar" o conteúdo em telas pequenas */
+    padding: 1rem;
     overflow-y: auto;
 }
 
 /* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
 @media (min-width: 768px) {
     .layout-container {
-        flex-direction: row; /* Alinha a sidebar e o conteúdo lado a lado em telas maiores */
+        flex-direction: row; /* Alinha o conteúdo lado a lado em telas maiores */
     }
 
     .page-content {
-        padding: 2rem; /* Aumenta o padding em telas maiores para melhor visualização */
+        padding: 2rem;
     }
 }

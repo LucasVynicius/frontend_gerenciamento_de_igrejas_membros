@@ -1,10 +1,10 @@
 /* ===== ESTILOS GERAIS PARA MOBILE (Mobile-First) ===== */
 .sidebar {
-    position: fixed; /* Fixa a posição para que ela possa ser ocultada */
+    position: fixed;
     top: 0;
     left: 0;
-    z-index: 1000; /* Garante que fique por cima de outros elementos */
-    width: 280px; /* Largura um pouco maior para mobile */
+    z-index: 1000;
+    width: 280px;
     height: 100vh;
     background-color: #000000;
     color: #fff;
@@ -13,15 +13,14 @@
     justify-content: space-between;
     padding: 1.5rem 0;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    transform: translateX(-100%); /* Esconde a sidebar por padrão */
+    transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
 }
 
 .sidebar.open {
-    transform: translateX(0); /* Mostra a sidebar quando a classe 'open' é adicionada */
+    transform: translateX(0);
 }
 
-/* Opcional: Adiciona um overlay escuro quando a sidebar está aberta */
 .sidebar-overlay {
     position: fixed;
     top: 0;
@@ -100,8 +99,8 @@
 /* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
 @media (min-width: 768px) {
     .sidebar {
-        position: static; /* Volta para a posição estática */
-        transform: translateX(0); /* Garante que ela esteja sempre visível */
+        position: static;
+        transform: translateX(0);
         width: 220px;
         height: auto;
     }
