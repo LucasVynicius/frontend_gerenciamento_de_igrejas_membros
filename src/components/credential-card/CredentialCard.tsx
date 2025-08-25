@@ -11,7 +11,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({ data }) => {
     return (
         <div className="credential-card">
             <div className="card-header">
-                <img src="/church-logoCard2.png" alt="Logo da Igreja" className="church-logo" />
+                <img src="../public/church-logoCard2.png" alt="Logo da Igreja" className="church-logo" />
                 <div className="church-name">
                     <h4>{data.churchName.toUpperCase()}</h4>
                     <p>{data.churchTradeName}</p>
