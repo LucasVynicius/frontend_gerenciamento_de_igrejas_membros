@@ -11,14 +11,16 @@ interface CredentialCardProps {
 const CredentialCard: React.FC<CredentialCardProps> = ({ data }) => {
     return (
         <div className="credential-card">
+            {/* Cabeçalho do Cartão */}
             <div className="card-header">
-                <img src="/church-logoCard2.png" alt="Logo da Igreja" className="church-logo" />
+                <img src="/church-logoCard.png" alt="Logo da Igreja" className="church-logo" />
                 <div className="church-name">
                     <h4>{data.churchName.toUpperCase()}</h4>
                     <p>{data.churchTradeName}</p>
                 </div>
             </div>
 
+            {/* Corpo do Cartão com Foto e Informações */}
             <div className="card-body">
                 <div className="member-photo">
                     {data.photoUrl ? (
