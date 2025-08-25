@@ -1,7 +1,7 @@
 import React from 'react';
 import type { CredentialData } from '../../types/credential/Credential';
 import { formatCpf } from '../../utils/formatCpf';
-import { translatePosition }from '../../utils/translations'
+import { translatePosition } from '../../utils/translations';
 import './CredentialCard.css';
 
 interface CredentialCardProps {
