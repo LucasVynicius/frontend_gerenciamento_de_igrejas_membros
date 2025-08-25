@@ -6,15 +6,18 @@
 
 .member-form {
     background: #fff;
-    padding: 20px; /* Padding ajustado para mobile */
+    padding: 20px;
+    /* Padding ajustado para mobile */
     border-radius: 12px;
-    width: 100%; /* Garante que ocupe a largura total em telas pequenas */
+    width: 100%;
+    /* Garante que ocupe a largura total em telas pequenas */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* ===== TÍTULOS ===== */
 .member-form h5 {
-    font-size: 1.1rem; /* Reduz o tamanho da fonte para mobile */
+    font-size: 1.1rem;
+    /* Reduz o tamanho da fonte para mobile */
     font-weight: 600;
     margin-bottom: 15px;
     color: #222;
@@ -88,13 +91,16 @@
     font-size: 0.95rem;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    width: 100%; /* Botões de largura total para mobile */
+    width: 100%;
+    /* Botões de largura total para mobile */
 }
 
 .member-form .modal-footer {
     display: flex;
-    flex-direction: column; /* Botões empilhados em telas pequenas */
-    gap: 10px;
+    flex-direction: column;
+    /* Faz os botões ficarem empilhados em telas pequenas */
+    gap: 15px;
+    /* Espaço entre os botões */
     margin-top: 20px;
 }
 
@@ -124,21 +130,29 @@
 /* ===== RESPONSIVIDADE PARA TELAS MAIORES QUE 768PX ===== */
 @media (min-width: 768px) {
     .member-form {
-        padding: 25px; /* Volta para o padding original em telas maiores */
-        max-width: 600px; /* Limita a largura do formulário para melhor legibilidade */
-        margin: 20px auto; /* Centraliza o formulário na tela */
+        padding: 25px;
+        /* Volta para o padding original em telas maiores */
+        max-width: 600px;
+        /* Limita a largura do formulário para melhor legibilidade */
+        margin: 20px auto;
+        /* Centraliza o formulário na tela */
     }
 
     .member-form h5 {
-        font-size: 1.2rem; /* Tamanho da fonte original */
+        font-size: 1.2rem;
+        /* Tamanho da fonte original */
     }
 
     .member-form .modal-footer {
-        flex-direction: row; /* Volta a alinhar os botões lado a lado */
+        flex-direction: row;
+        /* Muda a direção para linha, alinhando os botões lado a lado */
         justify-content: flex-end;
+        /* Alinha os botões para a direita */
+        align-items: center;
     }
-    
+
     .member-form .btn {
-        width: auto; /* Botões com largura automática */
+        width: auto;
+        /* Botões com largura automática */
     }
 }

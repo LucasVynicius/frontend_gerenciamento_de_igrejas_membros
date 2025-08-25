@@ -11,12 +11,12 @@
     background-color: #ffffff;
     border-radius: 12px;
     padding: 25px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Sombra mais suave */
     text-align: center;
     text-decoration: none;
     color: #333;
     cursor: pointer;
-    border: 1px solid #0c0c0c;
+    border: 1px solid #ddd; /* Borda mais clara e suave */
     display: flex;
     flex-direction: column;
     align-items: center;

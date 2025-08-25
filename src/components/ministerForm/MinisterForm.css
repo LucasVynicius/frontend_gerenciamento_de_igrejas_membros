@@ -85,19 +85,20 @@ select:focus {
     cursor: not-allowed;
 }
 
-/* ===== ESTILOS PARA TELAS MAIORES QUE 576PX ===== */
 @media (min-width: 576px) {
     form {
         padding: 2rem;
-        max-width: 600px; /* Limita a largura em telas maiores */
+        max-width: 600px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     }
     
     .modal-footer {
-        flex-direction: row; /* Botões lado a lado */
-        align-items: center;
+        flex-direction: row; /* Faz os botões ficarem lado a lado */
+        justify-content: flex-end; /* Alinha os botões para a direita */
+        gap: 0.8rem; /* Adiciona o espaçamento entre os botões */
     }
     
     .btn {
-        width: auto; /* Largura automática para botões */
+        width: auto; /* A largura dos botões se ajusta ao conteúdo */
     }
 }

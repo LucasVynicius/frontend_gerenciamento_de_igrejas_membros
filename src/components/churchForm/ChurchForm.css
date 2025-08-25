@@ -126,27 +126,39 @@
 }
 
 
-  .church-form {
-    padding: 25px;
-    /* Volta para o padding original em telas maiores */
-    max-width: 600px;
-    /* Limita a largura do formulário para melhor legibilidade */
-    margin: 20px auto;
-    /* Centraliza o formulário na tela */
-  }
+.church-form {
+  padding: 25px;
+  /* Volta para o padding original em telas maiores */
+  max-width: 600px;
+  /* Limita a largura do formulário para melhor legibilidade */
+  margin: 20px auto;
+  /* Centraliza o formulário na tela */
+}
 
-  .church-form h5 {
-    font-size: 1.2rem;
-    /* Tamanho da fonte original */
-  }
+.church-form h5 {
+  font-size: 1.2rem;
+  /* Tamanho da fonte original */
+}
 
-  .church-form .modal-footer {
+.church-form .modal-footer {
+  flex-direction: row;
+  /* Volta a alinhar os botões lado a lado */
+  justify-content: flex-end;
+}
+
+.church-form .btn {
+  width: auto;
+  /* Botões com largura automática */
+}
+
+@media (min-width: 768px) {
+  .modal-footer {
     flex-direction: row;
-    /* Volta a alinhar os botões lado a lado */
     justify-content: flex-end;
+    align-items: center;
   }
 
-  .church-form .btn {
+  .modal-footer .btn {
     width: auto;
-    /* Botões com largura automática */
   }
+}

@@ -127,4 +127,8 @@
     .main-content {
         margin-left: 220px;
     }
+
+     .close-btn {
+        display: none;
+    }
 }

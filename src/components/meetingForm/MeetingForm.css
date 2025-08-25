@@ -123,12 +123,13 @@
         font-size: 1.2rem;
     }
 
+    /* Regras para o footer em telas maiores */
     .meeting-form .modal-footer {
-        flex-direction: row;
-        justify-content: flex-end;
+        flex-direction: row; /* Alinha os botões lado a lado */
+        justify-content: flex-end; /* Alinha os botões à direita */
     }
     
     .meeting-form .btn {
-        width: auto;
+        width: auto; /* A largura dos botões se ajusta ao conteúdo */
     }
 }
