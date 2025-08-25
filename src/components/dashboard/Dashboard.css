@@ -1,4 +1,4 @@
-/* ===== ESTILOS PARA TELAS MÓVEIS (Mobile-First) ===== */
+/* ===== ESTILOS GERAIS PARA TELAS MÓVEIS (Mobile-First) ===== */
 .dashboard-grid {
     display: grid;
     /* Em telas pequenas, a grid terá apenas uma coluna */

@@ -1,109 +1,84 @@
 /* ===== ESTILOS GERAIS PARA TELAS MÓVEIS (Mobile-First) ===== */
-.upload-photo-modal {
-  /* Estilos do container do modal */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
 }
 
-.text-center {
-  text-align: center;
+.modal-content {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+    width: 95%; /* Largura maior para mobile */
+    max-width: none;
+    margin: 10px; /* Margem para evitar que o modal toque as bordas */
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
-/* Área de preview da imagem */
-.preview-wrapper {
-  width: 150px;
-  height: 150px;
-  margin: auto;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-.preview-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.modal-title {
+    font-size: 1.2rem; /* Fonte menor para mobile */
+    font-weight: 600;
+    margin: 0;
 }
 
-.preview-placeholder {
-  width: 150px;
-  height: 150px;
-  border: 2px dashed #b0c4de;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #777;
-  font-size: 0.9rem;
-  background-color: #f9f9f9;
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    color: #aaa;
 }
 
-.form-label {
-  font-weight: 600;
-  margin-top: 1rem;
-  display: block;
-  color: #333;
+.modal-close:hover {
+    color: #555;
 }
 
-.form-control {
-  border: 1px solid #b0c4de;
-  border-radius: 8px;
-  padding: 0.6rem;
-  width: 100%; /* Garante que ocupe a largura total */
-  transition: all 0.2s ease-in-out;
+.modal-body {
+    padding-bottom: 20px;
 }
 
-.form-control:focus {
-  outline: none;
-  border-color: #4682b4;
-  box-shadow: 0 0 4px rgba(70, 130, 180, 0.3);
-}
-
-/* Rodapé do modal para telas pequenas */
 .modal-footer {
-  display: flex;
-  flex-direction: column; /* Alinha os botões em coluna para mobile */
-  gap: 0.5rem; /* Espaço menor entre os botões */
-  margin-top: 1.5rem;
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  border: none;
-  border-radius: 6px;
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
-  width: 100%; /* Botões com largura total para mobile */
-}
-
-.btn-primary {
-  background-color: #4682b4;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #36648b;
-}
-
-.btn-secondary {
-  background-color: #dc3545;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #b52a38;
-}
-
-/* ===== ESTILOS PARA TELAS MAIORES QUE 576PX ===== */
-@media (min-width: 576px) {
-  .modal-footer {
-    flex-direction: row; /* Alinha os botões em linha para desktop */
+    display: flex;
     justify-content: flex-end;
-    gap: 0.8rem;
-  }
-  
-  .btn {
-    width: auto; /* Deixa os botões com largura automática */
-  }
+    border-top: 1px solid #e9ecef;
+    padding-top: 10px;
+    gap: 10px;
+}
+
+.modal-info .modal-title { color: #007bff; }
+.modal-success .modal-title { color: #28a745; }
+.modal-error .modal-title { color: #dc3545; }
+
+
+/* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
+@media (min-width: 768px) {
+    .modal-content {
+        width: 90%;
+        max-width: 600px; /* Limita a largura em telas maiores */
+        margin: auto;
+    }
+    
+    .modal-title {
+        font-size: 1.5rem; /* Aumenta a fonte para telas maiores */
+    }
 }

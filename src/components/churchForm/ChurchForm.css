@@ -1,4 +1,4 @@
-/* ===== RESET BÁSICO ===== */
+/* ===== ESTILOS GERAIS PARA TELAS MÓVEIS (Mobile-First) ===== */
 .church-form * {
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -6,15 +6,18 @@
 
 .church-form {
   background: #fff;
-  padding: 25px;
+  padding: 20px;
+  /* Padding ajustado para mobile */
   border-radius: 12px;
-  max-width: 100%;
+  width: 100%;
+  /* Garante que ocupe a largura total em telas pequenas */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* ===== TÍTULOS ===== */
 .church-form h5 {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  /* Reduz o tamanho da fonte para mobile */
   font-weight: 600;
   margin-bottom: 15px;
   color: #222;
@@ -26,6 +29,7 @@
   margin-bottom: 6px;
   color: #555;
   display: block;
+  font-size: 0.9rem;
 }
 
 /* ===== INPUTS, SELECTS E TEXTAREAS ===== */
@@ -35,7 +39,7 @@
   padding: 10px 14px;
   font-size: 0.95rem;
   color: #333;
-  border: 1px solid #b0c4de; /* Borda azul clara */
+  border: 1px solid #b0c4de;
   border-radius: 8px;
   background-color: #fff;
   transition: all 0.2s ease-in-out;
@@ -87,6 +91,16 @@
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  width: 100%;
+  /* Botões de largura total para mobile */
+}
+
+.church-form .modal-footer {
+  display: flex;
+  flex-direction: column;
+  /* Botões empilhados em telas pequenas */
+  gap: 10px;
+  margin-top: 20px;
 }
 
 /* Botão Salvar */
@@ -111,16 +125,28 @@
   background-color: #b52a37;
 }
 
-/* ===== RESPONSIVIDADE ===== */
-@media (max-width: 768px) {
+
   .church-form {
-    padding: 20px 15px;
+    padding: 25px;
+    /* Volta para o padding original em telas maiores */
+    max-width: 600px;
+    /* Limita a largura do formulário para melhor legibilidade */
+    margin: 20px auto;
+    /* Centraliza o formulário na tela */
   }
+
+  .church-form h5 {
+    font-size: 1.2rem;
+    /* Tamanho da fonte original */
+  }
+
   .church-form .modal-footer {
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    /* Volta a alinhar os botões lado a lado */
+    justify-content: flex-end;
   }
+
   .church-form .btn {
-    width: 100%;
+    width: auto;
+    /* Botões com largura automática */
   }
-}

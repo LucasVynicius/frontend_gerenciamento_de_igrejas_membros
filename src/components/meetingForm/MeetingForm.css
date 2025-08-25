@@ -1,4 +1,4 @@
-/* ===== ESTILOS GERAIS PARA MOBILE (Mobile-First) ===== */
+/* ===== ESTILOS GERAIS PARA TELAS MÓVEIS (Mobile-First) ===== */
 .meeting-form * {
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -6,14 +6,14 @@
 
 .meeting-form {
     background: #fff;
-    padding: 20px;
+    padding: 20px; /* Padding ajustado para mobile */
     border-radius: 12px;
-    width: 100%;
+    width: 100%; /* Garante que ocupe a largura total em telas pequenas */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .meeting-form h5 {
-    font-size: 1.1rem;
+    font-size: 1.1rem; /* Reduz o tamanho da fonte para mobile */
     font-weight: 600;
     margin-bottom: 15px;
     color: #222;

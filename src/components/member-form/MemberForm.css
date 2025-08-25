@@ -1,4 +1,4 @@
-/* ===== ESTILOS GERAIS PARA MOBILE (Mobile-First) ===== */
+/* ===== ESTILOS GERAIS PARA TELAS MÓVEIS (Mobile-First) ===== */
 .member-form * {
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -6,15 +6,15 @@
 
 .member-form {
     background: #fff;
-    padding: 20px;
+    padding: 20px; /* Padding ajustado para mobile */
     border-radius: 12px;
-    width: 100%;
+    width: 100%; /* Garante que ocupe a largura total em telas pequenas */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* ===== TÍTULOS ===== */
 .member-form h5 {
-    font-size: 1.1rem;
+    font-size: 1.1rem; /* Reduz o tamanho da fonte para mobile */
     font-weight: 600;
     margin-bottom: 15px;
     color: #222;
@@ -88,12 +88,12 @@
     font-size: 0.95rem;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    width: 100%;
+    width: 100%; /* Botões de largura total para mobile */
 }
 
 .member-form .modal-footer {
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Botões empilhados em telas pequenas */
     gap: 10px;
     margin-top: 20px;
 }
@@ -120,24 +120,25 @@
     background-color: #b52a37;
 }
 
+
 /* ===== RESPONSIVIDADE PARA TELAS MAIORES QUE 768PX ===== */
 @media (min-width: 768px) {
     .member-form {
-        padding: 25px;
-        max-width: 600px;
-        margin: 20px auto;
+        padding: 25px; /* Volta para o padding original em telas maiores */
+        max-width: 600px; /* Limita a largura do formulário para melhor legibilidade */
+        margin: 20px auto; /* Centraliza o formulário na tela */
     }
 
     .member-form h5 {
-        font-size: 1.2rem;
+        font-size: 1.2rem; /* Tamanho da fonte original */
     }
 
     .member-form .modal-footer {
-        flex-direction: row;
+        flex-direction: row; /* Volta a alinhar os botões lado a lado */
         justify-content: flex-end;
     }
     
     .member-form .btn {
-        width: auto;
+        width: auto; /* Botões com largura automática */
     }
 }

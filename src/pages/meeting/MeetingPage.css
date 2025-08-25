@@ -11,9 +11,19 @@
     margin-bottom: 1.5rem;
 }
 
-.page-header-container h1 {
+.page-title-group h1 {
     font-size: 1.5rem;
-    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.page-title-group p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.page-actions {
+    display: flex;
+    justify-content: center;
 }
 
 .btn-add {
@@ -25,7 +35,7 @@
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.2s;
-    width: 100%; /* Botão ocupa a largura total em mobile */
+    width: 100%;
 }
 
 .btn-add:hover {
@@ -35,19 +45,20 @@
 /* Container da Tabela */
 .table-container {
     overflow-x: auto; /* Adiciona scroll horizontal se a tabela for muito larga */
+    margin-top: 1.5rem;
 }
 
 .table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9rem;
+    font-size: 0.8rem; /* Fonte menor para caber em telas pequenas */
     background-color: #fff;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    min-width: 600px; /* Garante que a tabela não fique espremida */
+    min-width: 700px; /* Garante que a tabela não fique espremida */
 }
 
 .table thead th, .table tbody td {
-    padding: 12px 15px;
+    padding: 12px 8px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
@@ -64,31 +75,39 @@
 
 .actions-cell {
     display: flex;
-    gap: 8px;
+    gap: 4px; /* Reduz o espaço entre os botões */
     white-space: nowrap; /* Impede que os botões quebrem a linha */
 }
 
 .actions-cell .btn {
-    padding: 8px;
-    font-size: 1rem;
+    padding: 6px; /* Padding menor para os botões */
+    font-size: 0.9rem;
     border-radius: 4px;
     cursor: pointer;
     border: none;
     transition: background-color 0.2s;
 }
 
+.btn-info { background-color: #17a2b8; color: #fff; }
+.btn-info:hover { background-color: #138496; }
 .btn-warning { background-color: #ffc107; color: #333; }
 .btn-warning:hover { background-color: #e0a800; }
 .btn-danger { background-color: #dc3545; color: #fff; }
 .btn-danger:hover { background-color: #c82333; }
-.btn-info { background-color: #17a2b8; color: #fff; }
-.btn-info:hover { background-color: #138496; }
+.btn-secondary { background-color: #6c757d; color: #fff; }
+.btn-secondary:hover { background-color: #5c636a; }
+.btn-primary { background-color: #0d6efd; color: #fff; }
+.btn-primary:hover { background-color: #0b5ed7; }
+.btn-success { background-color: #28a745; color: #fff; }
+.btn-success:hover { background-color: #218838; }
 
 
 /* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
 @media (min-width: 768px) {
     .page-container {
         padding: 2rem;
+        max-width: 1200px; /* Adiciona uma largura máxima para centralizar */
+        margin: auto; /* Centraliza o conteúdo */
     }
     
     .page-header-container {
@@ -97,11 +116,28 @@
         align-items: center;
     }
 
+    .page-actions {
+        justify-content: flex-end;
+    }
+
     .btn-add {
         width: auto;
     }
 
     .table {
+        font-size: 0.9rem;
         min-width: auto;
+    }
+
+    .table thead th, .table tbody td {
+        padding: 12px 15px;
+    }
+
+    .actions-cell {
+        gap: 8px;
+    }
+
+    .actions-cell .btn {
+        padding: 8px;
     }
 }

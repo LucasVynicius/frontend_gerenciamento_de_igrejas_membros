@@ -8,6 +8,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .page-title-group h1 {
@@ -41,8 +42,9 @@
     background-color: #218838;
 }
 
+/* Container da Tabela */
 .table-container {
-    overflow-x: auto; /* Adiciona scroll horizontal em telas pequenas */
+    overflow-x: auto; /* Adiciona scroll horizontal se a tabela for muito larga */
     margin-top: 1.5rem;
 }
 
@@ -88,6 +90,7 @@
     font-size: 1.2rem;
     color: #6c757d;
 }
+
 
 /* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
 @media (min-width: 768px) {
