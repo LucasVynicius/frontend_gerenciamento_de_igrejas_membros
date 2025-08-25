@@ -99,9 +99,32 @@
 /* ===== ESTILOS PARA TELAS MAIORES QUE 768PX ===== */
 @media (min-width: 768px) {
     .sidebar {
-        position: static;
+        /* A posição deve ser 'fixed' ou 'sticky' para o layout de desktop. */
+        position: fixed; 
+        
+        /* A largura pode ser ajustada para telas maiores */
+        width: 220px; 
+        
+        /* O transform deve ser 'translateX(0)' para garantir que ela esteja visível */
         transform: translateX(0);
-        width: 220px;
-        height: auto;
+        
+        /* Adicionamos o z-index para garantir que a sidebar esteja acima do conteúdo principal */
+        z-index: 1000;
+        
+        /* Removemos o height: auto; para manter a altura total da viewport */
+        height: 100vh;
+        
+        /* Removemos as propriedades desnecessárias para este cenário */
+        /* height: auto; */
+    }
+    
+    /* A overlay não é necessária em telas maiores, então a gente remove */
+    .sidebar-overlay {
+        display: none !important;
+    }
+
+    /* O conteúdo principal da página deve ter uma margem para compensar a sidebar */
+    .main-content {
+        margin-left: 220px;
     }
 }
