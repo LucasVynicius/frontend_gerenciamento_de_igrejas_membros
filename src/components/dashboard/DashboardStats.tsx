@@ -1,31 +1,25 @@
-import React, {useState, useEffect} from 'react';
-import { getDashboardStats } from '../../services/dashboard/dashboardService'; // O serviço que criamos antes
-import type { DashboardStats as IDashboardStats } from '../../services/dashboard/dashboardService'; // Renomeando o tipo para evitar conflito
+import React from 'react';
 import { FaUsers, FaUserGraduate, FaChurch, FaUserTie } from 'react-icons/fa';
-import './Dashboard.css'; // Vamos reutilizar e adicionar estilos ao seu CSS
+import './Dashboard.css';
+import { useDashboardStats } from './useDashboardStats'; // Importamos o novo hook
 
 const DashboardStats: React.FC = () => {
-    const [stats, setStats] = useState<IDashboardStats | null>(null);
-    const [loading, setLoading] = useState(true);
+    // Usamos o hook para pegar os estados que precisamos
+    const { stats, loading, error } = useDashboardStats();
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            setLoading(true);
-            try {
-                const data = await getDashboardStats();
-                setStats(data);
-            } catch (error) {
-                console.error("Erro ao carregar estatísticas", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchStats();
-    }, []);
-
+    // Se estiver carregando, mostra a mensagem
     if (loading) {
         return <div className="loading-message">Carregando estatísticas...</div>;
+    }
+
+    // Se deu erro, mostra a mensagem de erro
+    if (error) {
+        return <div className="error-message">{error}</div>;
+    }
+
+    // Se não tiver dados, mostra uma mensagem
+    if (!stats) {
+        return <div className="no-data-message">Nenhuma estatística encontrada.</div>;
     }
 
     return (
@@ -33,7 +27,7 @@ const DashboardStats: React.FC = () => {
             <div className="stat-card members">
                 <FaUsers size={30} className="stat-icon" />
                 <div className="stat-info">
-                    <h2>{stats?.totalMembers}</h2>
+                    <h2>{stats.totalMembers}</h2>
                     <p>Membros</p>
                 </div>
             </div>
@@ -41,7 +35,7 @@ const DashboardStats: React.FC = () => {
             <div className="stat-card ministers">
                 <FaUserGraduate size={30} className="stat-icon" />
                 <div className="stat-info">
-                    <h2>{stats?.totalMinisters}</h2>
+                    <h2>{stats.totalMinisters}</h2>
                     <p>Ministros</p>
                 </div>
             </div>
@@ -49,7 +43,7 @@ const DashboardStats: React.FC = () => {
             <div className="stat-card leaders">
                 <FaUserTie size={30} className="stat-icon" />
                 <div className="stat-info">
-                    <h2>{stats?.totalLeaders}</h2>
+                    <h2>{stats.totalLeaders}</h2>
                     <p>Líderes</p>
                 </div>
             </div>
@@ -57,7 +51,7 @@ const DashboardStats: React.FC = () => {
             <div className="stat-card churches">
                 <FaChurch size={30} className="stat-icon" />
                 <div className="stat-info">
-                    <h2>{stats?.totalChurches}</h2>
+                    <h2>{stats.totalChurches}</h2>
                     <p>Igrejas</p>
                 </div>
             </div>
